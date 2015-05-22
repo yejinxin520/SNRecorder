@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">SNRecorder</string>
+    <string name="task">record tasks</string>
+    <string name="setting">setting</string>
+    <string name="query">UID query</string>
+
+</resources>
