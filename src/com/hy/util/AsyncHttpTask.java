@@ -1,4 +1,4 @@
-package com.hy.http;
+package com.hy.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

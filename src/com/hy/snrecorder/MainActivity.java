@@ -3,7 +3,7 @@ package com.hy.snrecorder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 
-import com.hy.http.HttpHandler;
+import com.hy.util.HttpHandler;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,6 +15,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
 
 public class MainActivity extends Activity {
@@ -26,6 +27,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_main);
 		
@@ -88,6 +90,14 @@ public class MainActivity extends Activity {
 				}
 			}.execute();
 				        
+		}
+		if(v.equals((LinearLayout)findViewById(R.id.query))){
+			Intent query = new Intent(this, QueryActivity.class);
+			startActivity(query);
+		}
+		if(v.equals((LinearLayout)findViewById(R.id.setting))){
+			Intent setting = new Intent(this, SettingActivity.class);
+			startActivity(setting);
 		}
 	}
 }

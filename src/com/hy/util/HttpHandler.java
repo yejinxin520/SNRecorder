@@ -1,4 +1,4 @@
-package com.hy.http;
+package com.hy.util;
 
 import org.apache.http.client.methods.HttpUriRequest;
 
