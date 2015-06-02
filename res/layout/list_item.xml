@@ -20,7 +20,7 @@
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
         android:text="@string/app_name"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textColor="#fff"
         android:textStyle="bold"
         />

@@ -1,8 +1,12 @@
 package com.hy.snrecorder;
 
+import java.io.FileInputStream;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EncodingUtils;
 
+import com.hy.util.ConfigurationSet;
 import com.hy.util.HttpHandler;
 
 import android.annotation.SuppressLint;
@@ -30,7 +34,7 @@ public class MainActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_main);
-		
+		initSetting();
 	}
 	public void doClick(View v){
 		if(v.equals((LinearLayout)findViewById(R.id.task))){
@@ -98,6 +102,30 @@ public class MainActivity extends Activity {
 		if(v.equals((LinearLayout)findViewById(R.id.setting))){
 			Intent setting = new Intent(this, SettingActivity.class);
 			startActivity(setting);
+		}
+	}
+	private void initSetting() {
+		String str = "";
+		try{
+			FileInputStream fis = openFileInput("conf");
+			int length = fis.available();
+			byte [] buffer = new byte[length];
+			fis.read(buffer);
+			str = EncodingUtils.getString(buffer, "utf-8");
+			fis.close();
+			String [] file = str.split("\n");
+			ConfigurationSet.setAutoUpload(Boolean.parseBoolean(file[0]));
+			ConfigurationSet.setSanTimes(Integer.parseInt(file[1]));
+			ConfigurationSet.setBarcodeLimit1(Integer.parseInt(file[2]));
+			ConfigurationSet.setBarcodeLimit2(Integer.parseInt(file[3]));
+			ConfigurationSet.setBarcodeLimit3(Integer.parseInt(file[4]));
+		}catch(Exception e){
+			ConfigurationSet.setAutoUpload(false);
+			ConfigurationSet.setSanTimes(1);
+			ConfigurationSet.setBarcodeLimit1(0);
+			ConfigurationSet.setBarcodeLimit2(0);
+			ConfigurationSet.setBarcodeLimit3(0);
+			e.printStackTrace();
 		}
 	}
 }

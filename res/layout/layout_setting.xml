@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical" >
+    <LinearLayout 
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -14,10 +21,113 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/setting"
-            android:textColor="#09c"
+            android:textColor="#069"
             android:textSize="25sp"
             android:textStyle="bold"
             />
     </RelativeLayout>
-
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/autoupload"
+            android:textColor="#069"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            />
+    <ToggleButton 
+        android:id="@+id/isupload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:button="@drawable/iosswitch"
+        android:checked="false"
+        android:text=""
+        android:textOn=""
+        android:textOff=""
+        />
+    </RelativeLayout>
+    <RadioGroup 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <RadioButton 
+            android:id="@+id/rb1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="@string/upload1"
+            android:onClick="doRadioClick"
+            />
+        <RadioButton 
+            android:id="@+id/rb2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="@string/upload2"
+            android:onClick="doRadioClick"
+            />
+        <RadioButton 
+            android:id="@+id/rb3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="@string/upload3"
+            android:onClick="doRadioClick"
+            />
+    </RadioGroup>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        >
+        <net.simonvt.numberpicker.NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="50dp"
+            android:layout_height="60dp" 
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentRight="true"
+            />
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/numberPicker"
+            android:text="@string/length_limit1"
+            android:textSize="15sp"
+            />
+        
+    </RelativeLayout>    
+    </LinearLayout>
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/selector1"
+        android:onClick="doConfirm"
+        />
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/confirm"
+            android:textSize="12sp" 
+            
+            />
+    </RelativeLayout>
 </LinearLayout>

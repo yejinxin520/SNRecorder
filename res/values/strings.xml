@@ -4,5 +4,13 @@
     <string name="task">record tasks</string>
     <string name="setting">setting</string>
     <string name="query">UID query</string>
+    <string name="autoupload">auto upload</string>
+    <string name="upload1">disposable upload one barcode</string>
+    <string name="upload2">disposable upload two barcode</string>
+    <string name="upload3">disposable upload three barcode</string>
+    <string name="length_limit1">the limit of length of the first barcode</string>
+    <string name="length_limit2">the limit of length of the second barcode</string>
+    <string name="length_limit3">the limit of length of the third barcode</string>
+    <string name="confirm">confirm</string>
 
 </resources>

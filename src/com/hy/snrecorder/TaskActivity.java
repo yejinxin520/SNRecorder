@@ -48,7 +48,7 @@ public class TaskActivity extends ListActivity {
 					String model=jsonObject.getJSONArray("objects").getJSONObject(i).getString("model");
 					String snum= jsonObject.getJSONArray("objects").getJSONObject(i).getString("number");
 					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("image", R.drawable.ic_task);
+					map.put("image", R.drawable.ic_device);
 					map.put("content", snum+"¸ö"+model+"»úÆ÷Âë");
 					data.add(map);
 				}
