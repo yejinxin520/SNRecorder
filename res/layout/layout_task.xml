@@ -2,29 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#069"
+    android:background="#ebeced"
     android:orientation="vertical" >
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        
+        android:background="#fff"
         >
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/task"
-            android:textColor="#fff"
+            android:textColor="#121212"
             android:textSize="25sp"
-            android:textStyle="bold"
+            
+            />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#b3b3b6"
             />
     </RelativeLayout>
     <RelativeLayout 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp"
-            
+            android:background="#fff"
             >
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b6"
+            />
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,12 +48,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         
-        android:divider="#fff"
+        android:divider="#a6a6a7"
         android:dividerHeight="2dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/shape2"
+        android:background="@drawable/shape"
         ></ListView>
     </LinearLayout>
     <LinearLayout 
@@ -51,7 +62,7 @@
         android:layout_alignParentBottom="true"
         
         android:orientation="horizontal"
-        android:background="#fff"
+        android:background="#069"
         >
         
         </LinearLayout>    

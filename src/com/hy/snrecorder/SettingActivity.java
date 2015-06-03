@@ -103,11 +103,11 @@ public class SettingActivity extends Activity {
 			scanTimes = 1;
 			
 			if(hasadd1 == 1){
-				vg.removeViewAt(5);
+				vg.removeViewAt(3);
 				hasadd1 = 0;
 			}
 			if(hasadd ==1){
-				vg.removeViewAt(4);
+				vg.removeViewAt(2);
 				hasadd = 0;
 			}
 			break;
@@ -118,7 +118,7 @@ public class SettingActivity extends Activity {
 				hasadd = 1;
 			}
 			if(hasadd1 == 1){
-				vg.removeViewAt(5);
+				vg.removeViewAt(3);
 				hasadd1 = 0;
 			}
 			break;

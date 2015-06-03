@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="#ebeced"
     android:orientation="vertical" >
-    <LinearLayout 
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+    
     <RelativeLayout 
+        android:id="@+id/rltitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#fff"
@@ -21,23 +17,80 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/setting"
-            android:textColor="#069"
+            android:textColor="#121212"
             android:textSize="25sp"
-            android:textStyle="bold"
+            
+            />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#b3b3b6"
             />
     </RelativeLayout>
+    <LinearLayout 
+        android:id="@+id/llbot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"        
+        android:background="#069"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        >
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b6"
+            />
+        <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"             
+        >
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/selector1"
+            android:onClick="doConfirm" 
+            />
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/confirm"
+            android:textColor="#fff"
+            android:textSize="18sp" 
+            
+            />
+
+    </RelativeLayout>
+    </LinearLayout>
+    <ScrollView 
+        android:layout_below="@id/rltitle"
+        android:layout_above="@id/llbot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <LinearLayout         
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"        
+        >
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         >
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/autoupload"
-            android:textColor="#069"
+            android:textColor="#121212"
             android:textSize="20sp"
-            android:textStyle="bold"
             />
     <ToggleButton 
         android:id="@+id/isupload"
@@ -57,41 +110,93 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="#fff"
         >
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b6"
+            />
         <RadioButton 
             android:id="@+id/rb1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:text="@string/upload1"
+            android:textSize="18sp"
+            android:textColor="#121212"
             android:onClick="doRadioClick"
+            />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#ebeced"
             />
         <RadioButton 
             android:id="@+id/rb2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/upload2"
+            android:textSize="18sp"
+            android:textColor="#121212"
             android:onClick="doRadioClick"
+            />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#ebeced"
             />
         <RadioButton 
             android:id="@+id/rb3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/upload3"
+            android:textSize="18sp"
+            android:textColor="#121212"
             android:onClick="doRadioClick"
             />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b6"
+            />
     </RadioGroup>
-    <RelativeLayout
+    
+    <LinearLayout 
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp"
         >
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b6"
+            />
+        <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"        
+        >
+        
         <net.simonvt.numberpicker.NumberPicker
             android:id="@+id/numberPicker"
             android:layout_width="50dp"
@@ -108,26 +213,15 @@
             android:textSize="15sp"
             />
         
-    </RelativeLayout>    
-    </LinearLayout>
-    <RelativeLayout 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-    <Button
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_centerInParent="true"
-        android:background="@drawable/selector1"
-        android:onClick="doConfirm"
-        />
-        <TextView 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/confirm"
-            android:textSize="12sp" 
-            
-            />
     </RelativeLayout>
-</LinearLayout>
+    </LinearLayout>
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b6"
+            />
+    </LinearLayout>
+    </ScrollView>
+    
+    
+</RelativeLayout>
