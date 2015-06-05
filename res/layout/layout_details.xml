@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ebeced"
+    android:orientation="vertical" >
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#fff"
+        >
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/recorde"
+            android:textColor="#121212"
+            android:textSize="25sp"
+            
+            />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#b3b3b6"
+            />
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:layout_marginTop="5dp"
+        >
+
+        <TextView
+            android:id="@+id/modeltv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="@string/app_name" 
+            android:textSize="18sp"
+            android:textColor="#121212"
+            />
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/modeltv"
+            android:baselineAligned="false"
+            >
+            <LinearLayout 
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                >
+                <TextView
+            android:id="@+id/scanned"
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            
+            android:layout_marginTop="10dp"
+            android:text="@string/app_name" 
+            android:textColor="#069"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/scannedtv"
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:text="@string/scanned"            
+            android:textSize="12sp"
+            />
+            </LinearLayout>
+            <LinearLayout 
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                >
+                <TextView
+            android:id="@+id/total"
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="@string/app_name" 
+            android:textColor="#121212"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/totaltv"
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            
+            android:text="@string/total"            
+            android:textSize="12sp"
+            />
+            </LinearLayout>
+        </LinearLayout>
+        
+        
+    </RelativeLayout>
+    <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"            
+            android:background="#b3b3b6"
+            />
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:layout_marginTop="5dp"
+        >
+        <LinearLayout 
+            android:id="@+id/container1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"  
+            android:layout_marginTop="10dp"  
+            android:layout_marginBottom="10dp"        
+            android:baselineAligned="false"
+            >
+
+        <TextView
+            android:id="@+id/barcodetv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"    
+            android:layout_marginLeft="10dp"        
+            android:text="@string/app_name" 
+            android:textSize="15sp"
+            />
+        <TextView
+            android:id="@+id/barstr"            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"   
+            android:layout_marginLeft="10dp"         
+            android:text="@string/app_name" 
+            android:textColor="#121212"
+            android:textSize="20sp"
+            />
+        </LinearLayout>
+        <Button 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/selector1"
+            android:onClick="doScan"
+            android:text="@string/confirm"
+            />
+        
+    </RelativeLayout>
+    <View 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"            
+            android:background="#b3b3b6"
+            />
+
+</LinearLayout>

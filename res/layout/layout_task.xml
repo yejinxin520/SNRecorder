@@ -28,14 +28,10 @@
     <RelativeLayout 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="#fff"
             >
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#b3b3b6"
-            />
+        
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,7 +45,7 @@
         android:layout_height="wrap_content"
         
         android:divider="#a6a6a7"
-        android:dividerHeight="2dp"
+        android:dividerHeight="1dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"

@@ -39,7 +39,7 @@
         <View 
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#b3b3b6"
+            android:background="#069"
             />
         <RelativeLayout 
         android:layout_width="match_parent"
@@ -112,11 +112,7 @@
         android:orientation="vertical"
         android:background="#fff"
         >
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#b3b3b6"
-            />
+        
         <RadioButton 
             android:id="@+id/rb1"
             android:layout_width="match_parent"
@@ -188,7 +184,7 @@
         <View 
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#b3b3b6"
+            android:background="#fff"
             />
         <RelativeLayout
         android:layout_width="match_parent"
