@@ -1,5 +1,8 @@
 package com.hy.snrecorder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.json.JSONException;
@@ -19,8 +22,16 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SlidingDrawer;
+import android.widget.SlidingDrawer.OnDrawerCloseListener;
+import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.TextView;
 
+@SuppressWarnings("deprecation")
 public class DetailActivity extends Activity {
 
 	private int offset = 0;
@@ -30,6 +41,13 @@ public class DetailActivity extends Activity {
 	private int [] barcodelimit;
 	private TextView modeltv,total,scanned,barcode1;
 	private ProgressDialog dialog;
+	private LinearLayout llcontainer;
+	private SlidingDrawer drawer;
+	private ImageView imageView;
+	private ListView scannedListV;
+	private List<String> scannedList;
+	private ArrayAdapter<String> adapter;
+	private JSONObject jsonObject;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -57,6 +75,33 @@ public class DetailActivity extends Activity {
 		total.setText(tasknumber);
 		scanned = (TextView)findViewById(R.id.scanned);
 		barcode1 = (TextView)findViewById(R.id.barstr);
+		llcontainer = (LinearLayout)findViewById(R.id.container1);
+		if(scanTimes == 2){
+			llcontainer.removeViews(4, 2);
+		}
+		if(scanTimes == 1){
+			llcontainer.removeViews(2, 4);
+		}
+		drawer = (SlidingDrawer)findViewById(R.id.sduidlist);
+		imageView = (ImageView)findViewById(R.id.open);
+		drawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+			
+			@Override
+			public void onDrawerOpened() {
+				// TODO Auto-generated method stub
+				imageView.setImageResource(R.drawable.ic_launcher);
+			}
+		});
+		drawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+			
+			@Override
+			public void onDrawerClosed() {
+				// TODO Auto-generated method stub
+				imageView.setImageResource(R.drawable.ic_arrow);
+			}
+		});
+		scannedListV = (ListView)findViewById(R.id.contentlist);
+		scannedList = new ArrayList<String>();
 
 	}
 	private void httpQuery() {
@@ -101,7 +146,7 @@ public class DetailActivity extends Activity {
 						}
 					});
 					t.start();
-					JSONObject jsonObject = new JSONObject();
+					jsonObject = new JSONObject();
 					try{
 						jsonObject = new JSONObject(resultstr);
 					}catch(Exception e){
@@ -120,12 +165,17 @@ public class DetailActivity extends Activity {
 						visnum -= 20;
 					}
 					if(visnum > 20){
+						initList();
 						offset += 20;
 						url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
 								+ "offset="+offset+"&finished=0&task="+idMessage+"&p=0";
 						new AsyncHttpTask(this).execute();
+					}else{
+						initList();
 					}
 					scanned.setText(""+total_count);
+					adapter = new ArrayAdapter<String>(DetailActivity.this, android.R.layout.simple_list_item_1,scannedList);
+					scannedListV.setAdapter(adapter);
 				}
 			}
 			
@@ -138,6 +188,17 @@ public class DetailActivity extends Activity {
 	}
 	public void doScan(View v){
 		barcode1.setText("123456789012");
+	}
+	private void initList() {
+		int tempnum = total_count>20?20:total_count;
+		for(int i=0;i<tempnum;i++){
+			try{
+				String uid = jsonObject.getJSONArray("objects").getJSONObject(i).getString("UID");
+				scannedList.add(uid);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

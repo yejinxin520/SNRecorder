@@ -13,7 +13,11 @@
     <string name="length_limit2">the limit of length of the second barcode</string>
     <string name="length_limit3">the limit of length of the third barcode</string>
     <string name="confirm">confirm</string>
+    <string name="scan">scan</string>
     <string name="scanned">already scanned</string>
     <string name="total">total</string>
+    <string name="barcode1">barcode1</string>
+    <string name="barcode2">barcode2</string>
+    <string name="barcode3">barcode3</string>
 
 </resources>
