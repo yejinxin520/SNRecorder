@@ -14,10 +14,17 @@
     <string name="length_limit3">the limit of length of the third barcode</string>
     <string name="confirm">confirm</string>
     <string name="scan">scan</string>
+    <string name="clear">clear</string>
+    <string name="uploadbtn">upload</string>
     <string name="scanned">already scanned</string>
     <string name="total">total</string>
     <string name="barcode1">barcode1</string>
     <string name="barcode2">barcode2</string>
     <string name="barcode3">barcode3</string>
+    <string name="timedout">decode timed out</string>
+    <string name="cancel">decode cancelled</string>
+    <string name="failed">decode failed</string>
+    <string name="decoding">decoding</string>
+    <string name="state">scan barcode</string>
 
 </resources>
