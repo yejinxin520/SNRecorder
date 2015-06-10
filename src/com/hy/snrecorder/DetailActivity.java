@@ -5,7 +5,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,8 +32,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,9 +52,9 @@ import android.widget.TextView;
 public class DetailActivity extends Activity {
 
 	private int offset = 0;
-	private String idMessage,model,tasknumber,url,resultstr;
+	private String idMessage,model,tasknumber,url,resultstr,uploadCode="";
 	private Boolean autoUpload,init;
-	private int scanTimes,total_count,visnum,scannedTimes=0;
+	private int scanTimes,total_count,uploadnum,visnum,scannedTimes=0;
 	private int [] barcodelimit;
 	private TextView modeltv,total,scanned,barcode1,barcode2,barcode3,state;
 	private ProgressDialog dialog;
@@ -75,6 +82,11 @@ public class DetailActivity extends Activity {
 						state.setText("条码已记录或已扫描，请重新扫描！");
 						state.setTextColor(Color.RED);						
 					}else{
+						if(uploadCode.equals("")){
+							uploadCode =s; 
+						}else {
+							uploadCode +="_"+s;
+						}
 						if(scannedTimes == 0)
 							barcode1.setText(s);
 						else if(scannedTimes == 1)
@@ -83,7 +95,7 @@ public class DetailActivity extends Activity {
 							barcode3.setText(s);
 						tmpList.add(s);
 						scannedTimes++;
-						state.setText("条码扫描");
+						state.setText("条码"+scannedTimes+"扫描完成");
 						state.setTextColor(Color.BLACK);
 					}
 				}
@@ -96,8 +108,15 @@ public class DetailActivity extends Activity {
 				state.setText("扫描已完成，请上传或者清除");
 				state.setTextColor(Color.RED);
 			}
+			if(scannedTimes == scanTimes&&autoUpload){
+				for(int j=0;j<tmpList.size();j++)
+				{
+					hashtable.put(tmpList.get(j).toString(), "");
+				}
+			}
 		};
 	};
+	private Animation animzoomout,animfadeout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -159,8 +178,50 @@ public class DetailActivity extends Activity {
 		tmpList=new ArrayList<String>();
 		new ToneGenerator(AudioManager.STREAM_MUSIC,
 				ToneGenerator.MAX_VOLUME);
+		animzoomout = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.zoom_out);
+		animfadeout = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.fade_out);
+		animfadeout.setAnimationListener(new AnimationListener() {
+			
+			@Override
+			public void onAnimationStart(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animation arg0) {
+				// TODO Auto-generated method stub
+				findViewById(R.id.clear).startAnimation(animzoomout);
+			}
+		});
+		findViewById(R.id.clear).setOnTouchListener(listener);
 
 	}
+	OnTouchListener listener = new OnTouchListener() {
+		
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			// TODO Auto-generated method stub
+			if(event.getAction() == MotionEvent.ACTION_DOWN){  
+                //更改为按下时的背景图片  
+                  //v.startAnimation(animfadeout);
+                  findViewById(R.id.btcl).setVisibility(View.VISIBLE);
+                  findViewById(R.id.btcl).startAnimation(animfadeout);//v.startAnimation(animzoomout);
+        }else if(event.getAction() == MotionEvent.ACTION_UP){  
+                //改为抬起时的图片  
+        	findViewById(R.id.btcl).clearAnimation();findViewById(R.id.btcl).setVisibility(View.INVISIBLE);
+        }
+			return false;
+		}
+	};
 	private void httpQuery() {
 		dialog = new ProgressDialog(this);
 		dialog.setTitle("请稍等");
@@ -214,6 +275,7 @@ public class DetailActivity extends Activity {
 							total_count = jsonObject.getJSONObject("meta").getInt("total_count");
 							init = false;
 							visnum = total_count;
+							uploadnum = total_count;
 						}catch(JSONException e){
 							e.printStackTrace();
 						}
@@ -271,6 +333,62 @@ public class DetailActivity extends Activity {
 		
 		
 	}
+	public void doUpload(View v) {	
+		if(scannedTimes == scanTimes){
+			dopost();
+		}else{
+			state.setText("扫描未完成！");
+			state.setTextColor(Color.RED);
+		}
+	}
+	private void dopost() {
+		final String urlpath = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456";
+		new HttpHandler() {
+			
+			@Override
+			public void onResponse(String result) {
+				// TODO Auto-generated method stub
+				System.out.println("post:"+result.toString());
+				uploadnum++;
+				scanned.setText(""+uploadnum);
+				if(scannedTimes == 1)
+					barcode1.setText("");
+				else if(scannedTimes == 2)
+					barcode2.setText("");
+				else
+					barcode3.setText("");
+				state.setText("记录成功！请继续扫描！");
+				scannedTimes = 0;
+				scannedList.add(uploadCode);
+				uploadCode = "";
+				tmpList.clear();
+				adapter.notifyDataSetChanged();
+				scannedListV.setSelection(uploadnum-1);
+				drawer.open();
+			}
+			
+			@Override
+			public HttpUriRequest getRequestMethod() {
+				// TODO Auto-generated method stub
+				HttpPost httpPost = new HttpPost(urlpath);
+				try {
+				    String json = "";
+				    JSONObject jsonObject = new JSONObject();				
+					jsonObject.accumulate("task", "/mary/sellrec/api/task/"+idMessage+"/");
+					jsonObject.accumulate("UID", uploadCode);
+					json = jsonObject.toString();
+					StringEntity se = new StringEntity(json);
+					httpPost.setEntity(se);
+					httpPost.setHeader("Accept", "application/json");
+		            httpPost.setHeader("Content-type", "application/json");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();System.err.println("upload err");
+				}
+				return httpPost;
+			}
+		}.execute();
+	}
 	public void doClear(View v) {
 		if(scanTimes == 3){
 			barcode1.setText("");
@@ -284,9 +402,11 @@ public class DetailActivity extends Activity {
 		if(scanTimes == 1){
 			barcode1.setText("");				
 			}
+		
 		scannedTimes =0;
 		tmpList.clear();
-		state.setText("请扫描条码！");
+		uploadCode = "";
+		state.setText("请重新扫描条码！");
 		state.setTextColor(Color.BLACK);
 	}
 	private void initList() {

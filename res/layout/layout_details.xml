@@ -146,6 +146,19 @@
             android:textColor="#121212"
             />
         <Button 
+            android:id="@+id/btcl"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            
+            android:layout_marginTop="13dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/shape5"
+            android:onClick="doClear"
+            android:visibility="gone"
+            
+            />
+        <Button 
+            android:id="@+id/clear"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"            
@@ -153,7 +166,17 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/selector2"
             android:onClick="doClear"
-            android:text="@string/clear"
+            android:layout_alignTop="@id/btcl"
+            />        
+        <TextView            
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="35dp"       
+            android:text="@string/clear" 
+            android:textSize="18sp"
+            android:textColor="#121212"
             />
         <LinearLayout 
             android:id="@+id/container1"
@@ -239,7 +262,7 @@
             android:layout_marginTop="80dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/selector2"
-            android:onClick="doClear"
+            android:onClick="doUpload"
             android:text="@string/uploadbtn"
             />
     </RelativeLayout>
