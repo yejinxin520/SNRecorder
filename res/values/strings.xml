@@ -26,5 +26,6 @@
     <string name="failed">decode failed</string>
     <string name="decoding">decoding</string>
     <string name="state">scan barcode</string>
+    <string name="load">loading</string>
 
 </resources>

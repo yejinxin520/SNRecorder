@@ -11,6 +11,11 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.hy.util.AsyncHttpTask;
 import com.hy.util.ConfigurationSet;
 import com.hy.util.HttpHandler;
@@ -26,23 +31,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.util.TypedValue;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SlidingDrawer;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
@@ -61,7 +62,6 @@ public class DetailActivity extends Activity {
 	private LinearLayout llcontainer;
 	private SlidingDrawer drawer;
 	private ImageView imageView;
-	private ListView scannedListV;
 	private List<String> scannedList;
 	private List<String>tmpList;
 	private ArrayAdapter<String> adapter;
@@ -69,7 +69,7 @@ public class DetailActivity extends Activity {
 	DecodeUtil decodeMethod = new DecodeUtil();
 	private BarCodeReader bcr = null;
 	private Hashtable<String, String> hashtable;
-	
+	private SwipeMenuListView scannedListV;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler(){
 		public void handleMessage(Message msg) {
@@ -116,7 +116,6 @@ public class DetailActivity extends Activity {
 			}
 		};
 	};
-	private Animation animzoomout,animfadeout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -129,8 +128,16 @@ public class DetailActivity extends Activity {
 		tasknumber = intent.getStringExtra("numbermessage");
 		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
 		+ "offset="+offset+"&finished=0&task="+idMessage+"&p=0";
-		init = true;
+		init = true;		
+		scannedListV = (SwipeMenuListView)findViewById(R.id.contentlist);
+		hashtable=new Hashtable<String,String>();
+		scannedList = new ArrayList<String>();
+		tmpList=new ArrayList<String>();
 		httpQuery();
+		
+		adapter = new ArrayAdapter<String>(DetailActivity.this, android.R.layout.simple_list_item_1,scannedList);
+
+		scannedListV.setAdapter(adapter);
 		
 		autoUpload = ConfigurationSet.getAutoUpload();
 		scanTimes = ConfigurationSet.getSanTimes();
@@ -172,56 +179,40 @@ public class DetailActivity extends Activity {
 				imageView.setImageResource(R.drawable.ic_slidopen);
 			}
 		});
-		scannedListV = (ListView)findViewById(R.id.contentlist);
-		hashtable=new Hashtable<String,String>();
-		scannedList = new ArrayList<String>();
-		tmpList=new ArrayList<String>();
+		
 		new ToneGenerator(AudioManager.STREAM_MUSIC,
-				ToneGenerator.MAX_VOLUME);
-		animzoomout = AnimationUtils.loadAnimation(getApplicationContext(),
-                R.anim.zoom_out);
-		animfadeout = AnimationUtils.loadAnimation(getApplicationContext(),
-                R.anim.fade_out);
-		animfadeout.setAnimationListener(new AnimationListener() {
+				ToneGenerator.MAX_VOLUME);		
+		SwipeMenuCreator creator = new SwipeMenuCreator() {
 			
 			@Override
-			public void onAnimationStart(Animation arg0) {
+			public void create(SwipeMenu menu) {
 				// TODO Auto-generated method stub
-				
+				SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
+				deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+						0x3F, 0x25)));
+				deleteItem.setWidth(dp2px(90));
+				deleteItem.setIcon(R.drawable.ic_delete);
+				menu.addMenuItem(deleteItem);
 			}
+		};
+		scannedListV.setMenuCreator(creator);
+		scannedListV.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			
 			@Override
-			public void onAnimationRepeat(Animation arg0) {
+			public void onMenuItemClick(int position, SwipeMenu menu, int index) {
 				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onAnimationEnd(Animation arg0) {
-				// TODO Auto-generated method stub
-				findViewById(R.id.clear).startAnimation(animzoomout);
+				switch (index) {
+				case 0:
+					
+					break;
+
+				default:
+					break;
+				}
 			}
 		});
-		findViewById(R.id.clear).setOnTouchListener(listener);
-
 	}
-	OnTouchListener listener = new OnTouchListener() {
-		
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			// TODO Auto-generated method stub
-			if(event.getAction() == MotionEvent.ACTION_DOWN){  
-                //更改为按下时的背景图片  
-                  //v.startAnimation(animfadeout);
-                  findViewById(R.id.btcl).setVisibility(View.VISIBLE);
-                  findViewById(R.id.btcl).startAnimation(animfadeout);//v.startAnimation(animzoomout);
-        }else if(event.getAction() == MotionEvent.ACTION_UP){  
-                //改为抬起时的图片  
-        	findViewById(R.id.btcl).clearAnimation();findViewById(R.id.btcl).setVisibility(View.INVISIBLE);
-        }
-			return false;
-		}
-	};
+
 	private void httpQuery() {
 		dialog = new ProgressDialog(this);
 		dialog.setTitle("请稍等");
@@ -293,8 +284,8 @@ public class DetailActivity extends Activity {
 						initList();
 					}
 					scanned.setText(""+total_count);
-					adapter = new ArrayAdapter<String>(DetailActivity.this, android.R.layout.simple_list_item_1,scannedList);
-					scannedListV.setAdapter(adapter);
+					
+					
 				}
 			}
 			
@@ -411,15 +402,20 @@ public class DetailActivity extends Activity {
 	}
 	private void initList() {
 		int tempnum = total_count>20?20:total_count;
-		for(int i=0;i<tempnum;i++){
+		for(int i=0;i<tempnum;i++){String uid="";
 			try{
-				String uid = jsonObject.getJSONArray("objects").getJSONObject(i).getString("UID");
+				uid = jsonObject.getJSONArray("objects").getJSONObject(i).getString("UID");
 				hashtable.put(uid, "");
 				scannedList.add(uid);
+
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
+	}
+	private int dp2px(int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+				getResources().getDisplayMetrics());
 	}
 	@Override
 	protected void onPause() {
