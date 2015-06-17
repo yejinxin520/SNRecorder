@@ -4,6 +4,7 @@
     <string name="task">record tasks</string>
     <string name="setting">setting</string>
     <string name="query">UID query</string>
+    <string name="querybtn">query</string>
     <string name="recorde">Record</string>
     <string name="autoupload">auto upload</string>
     <string name="upload1">disposable upload one barcode</string>
@@ -26,6 +27,8 @@
     <string name="failed">decode failed</string>
     <string name="decoding">decoding</string>
     <string name="state">scan barcode</string>
+    <string name="querystate">please input </string>
     <string name="load">loading</string>
+    <string name="result">the result</string>
 
 </resources>

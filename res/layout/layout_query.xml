@@ -2,22 +2,139 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="#ebeced"
     android:orientation="vertical" >
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#fff"
+        android:background="#069"
         >
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/query"
-            android:textColor="#09c"
+            android:textColor="#fff"
             android:textSize="25sp"
             android:textStyle="bold"
             />
+        <View 
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:background="#b3b3b6"
+            />
     </RelativeLayout>
-
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <AutoCompleteTextView 
+                android:id="@+id/uidactv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"  
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/corner"          
+                android:hint="@string/querystate"
+                android:completionThreshold="1"
+                android:singleLine="true"
+                />
+        <ImageButton 
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/ic_query"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="12dp"
+            android:contentDescription="@string/app_name"
+            />
+        <ImageButton 
+            android:id="@+id/clearimg"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:background="@drawable/ic_clear"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="22dp"
+            android:layout_marginRight="22dp"
+            android:contentDescription="@string/app_name"
+            android:visibility="invisible"
+            android:onClick="doClear"
+            />
+    </RelativeLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"   
+        android:layout_marginBottom="10dp"
+        android:baselineAligned="false"
+        >
+        <RelativeLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+            <Button             
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/selector2"
+            android:onClick="doScan"
+            android:text="@string/scan"
+            android:textSize="15sp"
+            />
+        </RelativeLayout>
+        <RelativeLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+            <Button 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"    
+            android:layout_centerInParent="true"             
+            android:background="@drawable/selector2"
+            android:onClick="doQuery"
+            android:text="@string/querybtn"
+            android:textSize="15sp"
+            />
+        </RelativeLayout>
+        
+        
+    </LinearLayout>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#fff"
+        >
+        <TextView
+            android:id="@+id/resulttv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="@string/result" 
+            android:textSize="20sp"
+            android:textColor="#121212"
+            /> 
+            <ListView
+    	android:id="@+id/querylist"
+    	android:layout_below="@id/resulttv"
+    	android:layout_width="fill_parent"
+   	 	android:layout_height="fill_parent"
+   		android:drawSelectorOnTop="false" />
+    </RelativeLayout>
+    <View 
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"            
+            android:background="#b3b3b6"
+            />
+    <View 
+            android:layout_width="match_parent"
+            android:layout_height="10dp"            
+            />
 </LinearLayout>
