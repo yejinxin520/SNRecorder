@@ -30,5 +30,18 @@
     <string name="querystate">please input </string>
     <string name="load">loading</string>
     <string name="result">the result</string>
+    <string name="repairt">repair records</string>
+    <string name="outt">out records</string>
+    <string name="uidr">UID:</string>
+    <string name="customerr">customer:</string>
+    <string name="model">model:</string>
+    <string name="costr">cost:</string>
+    <string name="issuer">issues:</string>
+    <string name="solver">issues resolve:</string>
+    <string name="backtr">send back time:</string>
+    <string name="warrantyr">warranty:</string>
+    <string name="comment">comment:</string>
+    <string name="uidnum">UIDsNum:</string>
+    <string name="dateo">date:</string>
 
 </resources>

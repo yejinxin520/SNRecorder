@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -29,6 +30,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -56,6 +59,9 @@ public class QueryActivity extends Activity {
 		};
 	};
 	private ProgressDialog dialog;
+	private Intent infoIntent;
+	private String resultstr;
+	private JSONObject jsonObject;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -94,6 +100,39 @@ public class QueryActivity extends Activity {
 			}
 		};
 		uidactv.addTextChangedListener(textWatcher);
+		infoIntent=new Intent(this,InfoActivity.class);
+		queryListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position,
+					long id) {
+				// TODO Auto-generated method stub
+				Bundle b=new Bundle();
+				try{
+					if(position+1>total){
+						b.putString("type", "repair");
+						String customer = jsonObject.getJSONArray("repair")
+								.getJSONObject(position-total).getString("customer");
+						String model=jsonObject.getJSONArray("repair")
+								.getJSONObject(position-total).getString("model");	
+						b.putString("customer", customer);
+						b.putString("model", model);
+						int pk=jsonObject.getJSONArray("repair")
+								.getJSONObject(position-total).getInt("pk");
+						b.putInt("selection", pk);
+					}else{
+						int index=jsonObject.getJSONArray("objects")
+								.getJSONObject(position).getInt("index");
+						b.putInt("selection", index);
+						b.putString("type", "out");
+					}
+					infoIntent.putExtras(b);
+					startActivity(infoIntent);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	public void doScan(View v){		
 		decodeMethod.doDecode();
@@ -131,10 +170,6 @@ public class QueryActivity extends Activity {
 		dialog.setMessage("ÕýÔÚ²éÑ¯");
 		dialog.show();
 		new HttpHandler() {
-			
-			private String resultstr;
-			private JSONObject jsonObject;
-
 			@Override
 			public void onResponse(String result) {
 				// TODO Auto-generated method stub

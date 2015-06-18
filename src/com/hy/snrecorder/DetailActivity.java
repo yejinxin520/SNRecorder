@@ -216,7 +216,7 @@ public class DetailActivity extends Activity {
 	private void httpQuery() {
 		dialog = new ProgressDialog(this);
 		dialog.setTitle("请稍等");
-		dialog.setMessage("正在获取任务");
+		dialog.setMessage("正在查询");
 		dialog.show();
 		new HttpHandler() {
 			
