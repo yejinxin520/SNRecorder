@@ -7,7 +7,8 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.util.Log;
 
-public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback{
+public class DecodeUtil extends Activity implements
+		BarCodeReader.DecodeCallback {
 
 	static final int STATE_IDLE = 0;
 	static final int STATE_DECODE = 1;
@@ -41,25 +42,24 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 			Log.d("0127", str);
 		}
 	}
+
 	private int trigMode = BarCodeReader.ParamVal.LEVEL;
 
 	private int modechgEvents = 0;
 
 	private int motionEvents = 0;
-	
 
 	public void decodeinit(final BarCodeReader r) {
 		state = STATE_IDLE;
 
 		Thread t = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					
-					
-						bcr = r; // Android 2.3
+
+					bcr = r; // Android 2.3
 
 					if (bcr == null) {
 						System.out.println("open failed");
@@ -75,10 +75,10 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 		tg = new ToneGenerator(AudioManager.STREAM_MUSIC,
 				ToneGenerator.MAX_VOLUME);
 	}
-	
+
 	public void doDecode() {
 		// doSetParam(905, 1);
-		
+
 		if (setIdle() != STATE_IDLE)
 			return;
 		state = STATE_DECODE;
@@ -88,9 +88,9 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 		setData("");
 		setState(R.string.decoding);
 		bcr.startDecode(); // start decode (callback gets results)
-		
+
 	}
-	
+
 	private int setIdle() {
 		// TODO Auto-generated method stub
 		int prevState = state;
@@ -108,6 +108,7 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 		}
 		return ret;
 	}
+
 	private boolean isHandsFree() {
 		// TODO Auto-generated method stub
 		return (trigMode == BarCodeReader.ParamVal.HANDSFREE);
@@ -117,6 +118,7 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 		// TODO Auto-generated method stub
 		return (trigMode == BarCodeReader.ParamVal.AUTO_AIM);
 	}
+
 	@Override
 	public void onDecodeComplete(int symbology, int length, byte[] data,
 			BarCodeReader reader) {
@@ -182,9 +184,7 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 					decodeStatString = new String("");
 				}
 			}
-			
-			
-			
+
 			if (tg != null)
 				tg.startTone(ToneGenerator.TONE_CDMA_NETWORK_CALLWAITING);
 		} else // no-decode
@@ -216,15 +216,17 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 		// TODO Auto-generated method stub
 		decodeData = s;
 	}
+
 	public String getData() {
 		return decodeData;
-		
+
 	}
-	
+
 	public int getStateID() {
 		return stateID;
-		
+
 	}
+
 	@Override
 	public void onEvent(int event, int info, byte[] data, BarCodeReader reader) {
 		// TODO Auto-generated method stub
@@ -244,8 +246,6 @@ public class DecodeUtil extends Activity implements BarCodeReader.DecodeCallback
 			break;
 		}
 	}
-
-	
 
 	public String getDecodeState() {
 		return decodeState;

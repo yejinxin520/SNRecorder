@@ -4,282 +4,266 @@
     android:layout_height="match_parent"
     android:background="#ebeced"
     android:orientation="vertical" >
-    <RelativeLayout 
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#069"
-        >
-        <TextView 
+        android:background="#069" >
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/recorde"
             android:textColor="#fff"
             android:textSize="25sp"
-            android:textStyle="bold"
-            />
-        <View 
+            android:textStyle="bold" />
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_alignParentBottom="true"
-            android:background="#b3b3b6"
-            />
+            android:background="#b3b3b6" />
     </RelativeLayout>
-    <RelativeLayout 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-    <RelativeLayout 
-        android:id="@+id/rl1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:layout_marginTop="10dp"
-        >
 
-        <TextView
-            android:id="@+id/modeltv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:text="@string/app_name" 
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-        <LinearLayout 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/rl1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_below="@id/modeltv"
-            android:baselineAligned="false"
-            >
-            <LinearLayout 
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                >
-                <TextView
-            android:id="@+id/scanned"
-            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            
             android:layout_marginTop="10dp"
-            android:text="@string/app_name" 
-            android:textColor="#069"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            />
-        <TextView
-            android:id="@+id/scannedtv"
-            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="15dp"
-            android:text="@string/scanned"            
-            android:textSize="15sp"
-            />
-            </LinearLayout>
-            <LinearLayout 
-                android:layout_width="0dp"
+            android:background="#fff" >
+
+            <TextView
+                android:id="@+id/modeltv"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                >
-                <TextView
-            android:id="@+id/total"
-            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="@string/app_name" 
-            android:textColor="#121212"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            />
-        <TextView
-            android:id="@+id/totaltv"
-            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            
-            android:text="@string/total"            
-            android:textSize="15sp"
-            />
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="@string/load"
+                android:textColor="#121212"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/modeltv"
+                android:baselineAligned="false"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/scanned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/load"
+                        android:textColor="#069"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/scannedtv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/scanned"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/load"
+                        android:textColor="#121212"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/totaltv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/total"
+                        android:textSize="15sp" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-        
-        
-    </RelativeLayout>
-    <View 
-        android:layout_below="@id/rl1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"            
-            android:background="#b3b3b6"
-            />
-    <RelativeLayout 
-        android:id="@+id/rl2"
-        android:layout_below="@id/rl1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:layout_marginTop="10dp"
-        >
-        <TextView
-            android:id="@+id/statetv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:text="@string/state" 
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-        
-        <Button 
-            android:id="@+id/clear"
-            android:layout_below="@id/statetv"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"            
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/selector2"
-            android:onClick="doClear"
-            android:text="@string/clear"
-            android:textSize="15sp"
-            />        
-        
-        <LinearLayout 
-            android:id="@+id/container1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"                        
-            android:layout_centerVertical="true"
-            >
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/barcodetv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"    
-            android:layout_marginLeft="10dp"        
-            android:text="@string/barcode1" 
-            android:textSize="15sp"
-            />
-        <TextView
-            android:id="@+id/barstr"            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"   
-            android:layout_marginLeft="10dp" 
-            android:layout_marginBottom="10dp"         
-            android:text="" 
-            android:textColor="#121212"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            />
-        <TextView
-            android:id="@+id/barcodetv1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"    
-            android:layout_marginLeft="10dp"        
-            android:text="@string/barcode2" 
-            android:textSize="15sp"
-            />
-        <TextView
-            android:id="@+id/barstr1"            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"   
-            android:layout_marginLeft="10dp" 
-            android:layout_marginBottom="10dp"         
-            android:text="" 
-            android:textColor="#121212"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            />
-        <TextView
-            android:id="@+id/barcodetv2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"    
-            android:layout_marginLeft="10dp"        
-            android:text="@string/barcode3" 
-            android:textSize="15sp"
-            />
-        <TextView
-            android:id="@+id/barstr2"            
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"   
-            android:layout_marginLeft="10dp"   
-            android:layout_marginBottom="10dp"      
-            android:text="" 
-            android:textColor="#121212"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            />
-        </LinearLayout>
-        <Button 
-            android:id="@+id/scanbtn"
-            android:layout_below="@id/clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-
-            android:layout_marginRight="20dp"
-            android:background="@drawable/selector2"
-            android:onClick="doScan"
-            android:text="@string/scan"
-            android:textSize="15sp"
-            />
-        <Button 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/scanbtn"            
-            android:layout_marginRight="20dp"
-            android:background="@drawable/selector2"
-            android:onClick="doUpload"
-            android:text="@string/uploadbtn"
-            android:textSize="15sp"
-            />
-    </RelativeLayout>
-    <View 
-        android:layout_below="@id/rl2"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"            
-            android:background="#b3b3b6"
-            />
-    
-<SlidingDrawer 
-    android:id="@+id/sduidlist"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:handle="@+id/open"
-    android:content="@+id/contentlist"
-    android:orientation="vertical"
-    >
-    <ImageView 
-        android:id="@id/open"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_slidopen"
-        android:contentDescription="@string/app_name"
-        />
-    <com.baoyz.swipemenulistview.SwipeMenuListView
-        android:id="@+id/contentlist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:background="#ebeced"
-        />
-    
-</SlidingDrawer>
-</RelativeLayout>
+            android:layout_height="1dp"
+            android:layout_below="@id/rl1"
+            android:background="#b3b3b6" />
+
+        <RelativeLayout
+            android:id="@+id/rl2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl1"
+            android:layout_marginTop="10dp"
+            android:background="#fff" >
+
+            <TextView
+                android:id="@+id/statetv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="@string/state"
+                android:textColor="#121212"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/statetv"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/selector2"
+                android:onClick="doClear"
+                android:text="@string/clear"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/container1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/barcodetv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/barcode1"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/barstr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:text=""
+                    android:textColor="#121212"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/barcodetv1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/barcode2"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/barstr1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:text=""
+                    android:textColor="#121212"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/barcodetv2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/barcode3"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/barstr2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:text=""
+                    android:textColor="#121212"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/scanbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/clear"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/selector2"
+                android:onClick="doScan"
+                android:text="@string/scan"
+                android:textSize="15sp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/scanbtn"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/selector2"
+                android:onClick="doUpload"
+                android:text="@string/uploadbtn"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/rl2"
+            android:background="#b3b3b6" />
+
+        <SlidingDrawer
+            android:id="@+id/sduidlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:content="@+id/contentlist"
+            android:handle="@+id/open"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@id/open"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_slidopen" />
+
+            <com.baoyz.swipemenulistview.SwipeMenuListView
+                android:id="@+id/contentlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ebeced" />
+        </SlidingDrawer>
+    </RelativeLayout>
+
 </LinearLayout>

@@ -4,170 +4,160 @@
     android:layout_height="match_parent"
     android:background="#ebeced"
     android:orientation="vertical" >
-    <RelativeLayout 
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#fff"
-        >
-        <TextView 
+        android:background="#fff" >
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/app_name"
             android:textColor="#121212"
-            android:textSize="25sp"
-            
-            />
-        <View 
+            android:textSize="25sp" />
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
-            android:background="#b3b3b6"
-            />
+            android:background="#b3b3b6" />
     </RelativeLayout>
-    <View 
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
-        />
-    <LinearLayout 
+        android:layout_height="5dp" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical"
         android:background="#fff"
-        >
-        
-        <LinearLayout 
+        android:orientation="vertical" >
+
+        <LinearLayout
             android:id="@+id/task"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector"
-        android:orientation="horizontal"
-        android:layout_marginTop="55dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:onClick="doClick"
-        >
-        <RelativeLayout 
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            
-            android:layout_weight="1"
-            >
-            <ImageView 
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:layout_marginTop="5dp"
-                android:layout_centerInParent="true"               
-                android:src="@drawable/ic_task"
-                android:contentDescription="@string/app_name"
-                />
-        </RelativeLayout>
-        <TextView 
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/task"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:textSize="20sp"
-            android:textColor="#121212"
-            
-            />
-    </LinearLayout>
-    <LinearLayout 
-        android:id="@+id/query"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector"
-        android:orientation="horizontal"
-        android:layout_marginTop="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:onClick="doClick"
-        >
-        <RelativeLayout 
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            
-            android:layout_weight="1"
-            >
-            <ImageView 
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="55dp"
+            android:background="@drawable/selector"
+            android:onClick="doClick"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:layout_marginTop="5dp"
-                android:layout_centerInParent="true"               
-                android:src="@drawable/ic_query"
-                android:contentDescription="@string/app_name"
-                />
-        </RelativeLayout>
-        <TextView 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/query"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:textSize="20sp"
-            android:textColor="#121212"
-            
-            />
-    </LinearLayout>
-    <LinearLayout 
-        android:id="@+id/setting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector"
-        android:orientation="horizontal"
-        android:layout_marginTop="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:onClick="doClick"
-        >
-        <RelativeLayout 
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            
-            android:layout_weight="1"
-            >
-            <ImageView 
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_task" />
+            </RelativeLayout>
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:layout_marginTop="5dp"
-                android:layout_centerInParent="true"               
-                android:src="@drawable/ic_setting"
-                android:contentDescription="@string/app_name"
-                />
-        </RelativeLayout>
-        <TextView 
-            android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="2"
+                android:text="@string/task"
+                android:textColor="#121212"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/query"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/setting"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:textSize="20sp"
-            android:textColor="#121212"
-            
-            />
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/selector"
+            android:onClick="doClick"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_query" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="2"
+                android:text="@string/query"
+                android:textColor="#121212"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/selector"
+            android:onClick="doClick"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_setting" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="2"
+                android:text="@string/setting"
+                android:textColor="#121212"
+                android:textSize="20sp" />
+        </LinearLayout>
     </LinearLayout>
-    </LinearLayout>
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="horizontal"
-        >
-        <RelativeLayout 
+        android:orientation="horizontal" >
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            
-            android:background="#069"
-            >
-            
+            android:background="#069" >
         </RelativeLayout>
     </LinearLayout>
 

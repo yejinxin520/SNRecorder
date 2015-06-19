@@ -15,9 +15,10 @@ import android.widget.TextView;
 
 public class TaskAdapter extends BaseAdapter {
 
-	private List<Map<String,Object>> data;
+	private List<Map<String, Object>> data;
 	private Context context;
-	public TaskAdapter(Context context,List<Map<String,Object>> data) {
+
+	public TaskAdapter(Context context, List<Map<String, Object>> data) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		this.data = data;
@@ -47,9 +48,10 @@ public class TaskAdapter extends BaseAdapter {
 		LayoutInflater inflater = LayoutInflater.from(this.context);
 		View view = inflater.inflate(R.layout.list_item, null);
 		ImageView imageView = (ImageView) view.findViewById(R.id.modelimg);
-		TextView textView = (TextView)view.findViewById(R.id.taskcontent);
-		imageView.setBackgroundResource((Integer)data.get(position).get("image"));
-		textView.setText((String)data.get(position).get("content"));
+		TextView textView = (TextView) view.findViewById(R.id.taskcontent);
+		imageView.setBackgroundResource((Integer) data.get(position).get(
+				"image"));
+		textView.setText((String) data.get(position).get("content"));
 		return view;
 	}
 

@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
 	private ProgressDialog dialog;
 	String url = "http://192.168.0.201/mary/sellrec/api/task/"
 			+ "?formfat=json?&username=tomsu&api_key=123456&finished=0&p=0";
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,23 +37,25 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.layout_main);
 		initSetting();
 	}
-	public void doClick(View v){
-		if(v.equals((LinearLayout)findViewById(R.id.task))){
+
+	public void doClick(View v) {
+		if (v.equals((LinearLayout) findViewById(R.id.task))) {
 			dialog = new ProgressDialog(this);
 			dialog.setTitle("请稍等");
 			dialog.setMessage("正在获取任务");
-			dialog.show();			
+			dialog.show();
 			new HttpHandler() {
-				
+
 				@Override
 				public void onResponse(String result) {
 					// TODO Auto-generated method stub
-					if(result==""){
-						AlertDialog.Builder msgBox = new Builder(MainActivity.this);
+					if (result == "") {
+						AlertDialog.Builder msgBox = new Builder(
+								MainActivity.this);
 						msgBox.setTitle("提示");
 						msgBox.setMessage("网络错误，连接失败");
 						msgBox.setPositiveButton("确定", new OnClickListener() {
-							
+
 							@Override
 							public void onClick(DialogInterface arg0, int arg1) {
 								// TODO Auto-generated method stub
@@ -60,12 +63,11 @@ public class MainActivity extends Activity {
 							}
 						});
 						msgBox.create().show();
-					}
-					else{
+					} else {
 						System.out.println(result.toString());
-						
+
 						Thread t = new Thread(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
@@ -79,47 +81,49 @@ public class MainActivity extends Activity {
 							}
 						});
 						t.start();
-						Intent task = new Intent(MainActivity.this,TaskActivity.class);
+						Intent task = new Intent(MainActivity.this,
+								TaskActivity.class);
 						Bundle b = new Bundle();
 						b.putString("taskmessage", result);
 						task.putExtras(b);
 						startActivity(task);
 					}
 				}
-				
+
 				@Override
 				public HttpUriRequest getRequestMethod() {
 					// TODO Auto-generated method stub
 					return new HttpGet(url);
 				}
 			}.execute();
-				        
+
 		}
-		if(v.equals((LinearLayout)findViewById(R.id.query))){
+		if (v.equals((LinearLayout) findViewById(R.id.query))) {
 			Intent query = new Intent(this, QueryActivity.class);
 			startActivity(query);
 		}
-		if(v.equals((LinearLayout)findViewById(R.id.setting))){
+		if (v.equals((LinearLayout) findViewById(R.id.setting))) {
 			Intent setting = new Intent(this, SettingActivity.class);
 			startActivity(setting);
 		}
 	}
+
 	private void initSetting() {
 		String str = "";
-		try{
+		try {
 			FileInputStream fis = openFileInput("conf");
 			int length = fis.available();
-			byte [] buffer = new byte[length];
+			byte[] buffer = new byte[length];
 			fis.read(buffer);
 			str = EncodingUtils.getString(buffer, "utf-8");
 			fis.close();
-			String [] file = str.split("\n");
+			String[] file = str.split("\n");
 			ConfigurationSet.setAutoUpload(Boolean.parseBoolean(file[0]));
 			ConfigurationSet.setSanTimes(Integer.parseInt(file[1]));
 			ConfigurationSet.setBarcodeLimit1(Integer.parseInt(file[2]));
 			ConfigurationSet.setBarcodeLimit2(Integer.parseInt(file[3]));
 			ConfigurationSet.setBarcodeLimit3(Integer.parseInt(file[4]));
-		}catch(Exception e){
+		} catch (Exception e) {
 			ConfigurationSet.setAutoUpload(false);
 			ConfigurationSet.setSanTimes(1);
 			ConfigurationSet.setBarcodeLimit1(0);

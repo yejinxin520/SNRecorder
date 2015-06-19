@@ -3,35 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
-    <ImageView 
+
+    <ImageView
         android:id="@+id/modelimg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
-        
-        android:contentDescription="@string/app_name"
-        />
-    <TextView 
+        android:contentDescription="@string/app_name" />
+
+    <TextView
         android:id="@+id/taskcontent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/modelimg"
-        android:layout_marginLeft="3dp"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@id/modelimg"
         android:text="@string/app_name"
-        android:textSize="18sp"
         android:textColor="#121212"
-        
-        />
-    <ImageView 
-        android:layout_alignParentRight="true"
+        android:textSize="18sp" />
+
+    <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        
-        android:src="@drawable/ic_arrow"
         android:contentDescription="@string/app_name"
-        />
+        android:src="@drawable/ic_arrow" />
 
 </RelativeLayout>

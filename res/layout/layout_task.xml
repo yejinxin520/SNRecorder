@@ -4,64 +4,60 @@
     android:layout_height="match_parent"
     android:background="#ebeced"
     android:orientation="vertical" >
-    <RelativeLayout 
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#fff"
-        >
-        <TextView 
+        android:background="#fff" >
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/task"
+            android:text="@string/tasktitle"
             android:textColor="#121212"
-            android:textSize="25sp"
-            
-            />
-        <View 
+            android:textSize="25sp" />
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
-            android:background="#b3b3b6"
-            />
+            android:background="#b3b3b6" />
     </RelativeLayout>
-    <RelativeLayout 
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:background="#fff" >
+
+        <LinearLayout
+            android:id="@+id/ll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:background="#fff"
-            >
-        
-    <LinearLayout 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/ll"
-        android:orientation="vertical"
-        android:layout_marginBottom="60dp"
-        >
-    <ListView 
-        android:id="@id/android:list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        
-        android:divider="#a6a6a7"
-        android:dividerHeight="1dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/shape"
-        ></ListView>
-    </LinearLayout>
-    <LinearLayout 
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        
-        android:orientation="horizontal"
-        android:background="#069"
-        >
-        
-        </LinearLayout>    
-        </RelativeLayout>
-    
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dp"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@id/android:list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/shape"
+                android:divider="#a6a6a7"
+                android:dividerHeight="1dp" >
+            </ListView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="#069"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </RelativeLayout>
+
 </LinearLayout>

@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     android:background="#ebeced"
     android:orientation="vertical" >
-    <RelativeLayout 
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#069"
-        >
-        <TextView 
+        android:background="#069" >
+
+        <TextView
             android:id="@+id/outtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -17,143 +18,140 @@
             android:text="@string/outt"
             android:textColor="#fff"
             android:textSize="25sp"
-            android:textStyle="bold"
-            />
-        <View 
+            android:textStyle="bold" />
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
-            android:background="#b3b3b6"
-            />
+            android:background="#b3b3b6" />
     </RelativeLayout>
 
-    <ScrollView 
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
-        android:background="#fff"
-        >
-    <LinearLayout 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"        
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"        
-        android:orientation="vertical"
-        >
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:orientation="vertical"
-            >
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"            
-            android:text="@string/model" 
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-           <TextView
-            android:id="@+id/modelout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"     
-            android:layout_marginLeft="10dp"       
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-        </LinearLayout>
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#b3b3b6"
-            />        
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:orientation="vertical"
-            >
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"            
-            android:text="@string/uidnum" 
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-           <TextView
-            android:id="@+id/uidnum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"     
-            android:layout_marginLeft="10dp"       
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-        </LinearLayout>
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#b3b3b6"
-            />
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:orientation="vertical"
-            >
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"            
-            android:text="@string/dateo" 
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-           <TextView
-            android:id="@+id/dateout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"     
-            android:layout_marginLeft="10dp"       
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-        </LinearLayout>
+        android:background="#fff" >
 
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#b3b3b6"
-            />
-        <LinearLayout 
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
             android:orientation="vertical"
-            >
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"            
-            android:text="@string/comment" 
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-           <TextView
-            android:id="@+id/commentout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"     
-            android:layout_marginLeft="10dp"       
-            android:textSize="20sp"
-            android:textColor="#121212"
-            />
-        </LinearLayout>
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#b3b3b6"
-            />
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
 
-    </LinearLayout>
-</ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/model"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/modelout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#b3b3b6" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/uidnum"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/uidnum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#b3b3b6" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dateo"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/dateout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#b3b3b6" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comment"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/commentout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#121212"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#b3b3b6" />
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
