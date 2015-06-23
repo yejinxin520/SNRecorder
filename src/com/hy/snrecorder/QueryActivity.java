@@ -27,6 +27,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
@@ -138,6 +139,20 @@ public class QueryActivity extends Activity {
 				}
 			}
 		});
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		System.out.println(event.getKeyCode());
+		if (((keyCode == 135) || (keyCode == 136) )
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			doScan(findViewById(R.id.qscanbtn));
+			return true;
+		}
+		if(keyCode == 137&& event.getAction() == KeyEvent.ACTION_DOWN){
+			doQuery(findViewById(R.id.querybtn));
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	public void doScan(View v) {

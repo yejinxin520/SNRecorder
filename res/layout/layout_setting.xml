@@ -188,22 +188,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp" >
+                    android:paddingLeft="40dp"
+                    android:paddingRight="40dp" >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:layout_marginLeft="30dp"
                         android:text="@string/length_limit1"
-                        android:textSize="15sp" />
+                        android:textSize="18sp" />
 
                     <net.simonvt.numberpicker.NumberPicker
                         android:id="@+id/numberPicker"
-                        android:layout_width="50dp"
-                        android:layout_height="60dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="right"
                         android:layout_weight="1" />
                     

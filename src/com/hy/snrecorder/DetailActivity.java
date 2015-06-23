@@ -40,6 +40,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -54,8 +55,7 @@ import android.widget.TextView;
 public class DetailActivity extends Activity {
 
 	private int offset = 0;
-	private String idMessage, model, tasknumber, url, resultstr,
-			uploadCode = "";
+	private String idMessage, model, tasknumber, url, resultstr;
 	private Boolean autoUpload, init;
 	private int scanTimes, total_count, uploadnum, visnum, scannedTimes = 0;
 	private int[] barcodelimit;
@@ -85,12 +85,7 @@ public class DetailActivity extends Activity {
 					if (hashtable.containsKey(s) || tmpList.contains(s)) {
 						state.setText("条码已记录或已扫描，请重新扫描！");
 						state.setTextColor(Color.RED);
-					} else {
-						if (uploadCode.equals("")) {
-							uploadCode = s;
-						} else {
-							uploadCode += "_" + s;
-						}
+					} else {						
 						if (scannedTimes == 0)
 							barcode1.setText(s);
 						else if (scannedTimes == 1)
@@ -111,9 +106,16 @@ public class DetailActivity extends Activity {
 				state.setTextColor(Color.RED);
 			}
 			if (scannedTimes == scanTimes && autoUpload) {
+				dialog = new ProgressDialog(DetailActivity.this);
+				dialog.setTitle("请稍等");
+				dialog.setMessage("正在上传");
+				dialog.show();
 				for (int j = 0; j < tmpList.size(); j++) {
 					hashtable.put(tmpList.get(j).toString(), "");
+					dopost(tmpList.get(j).toString());
 				}
+				scannedTimes = 0;
+				tmpList.clear();
 			}
 		};
 	};
@@ -210,6 +212,7 @@ public class DetailActivity extends Activity {
 				case 0:
 					final String key = scannedList.get(position);
 					final String id = hashtable.get(key);
+					System.out.println(id);
 					Builder msgBox = new Builder(DetailActivity.this);
 					msgBox.setTitle("提示");
 					msgBox.setMessage("您确定要删除这条记录吗");
@@ -241,6 +244,20 @@ public class DetailActivity extends Activity {
 			}
 		});
 	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		System.out.println(event.getKeyCode());
+		if (((keyCode == 135) || (keyCode == 136) )
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			doScan(findViewById(R.id.scanbtn));
+			return true;
+		}
+		if(keyCode == 137&& event.getAction() == KeyEvent.ACTION_DOWN){
+			doUpload(findViewById(R.id.ulbtn));
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	private void httpDelete(final String id) {
 		dialog = new ProgressDialog(this);
@@ -267,13 +284,13 @@ public class DetailActivity extends Activity {
 					}
 				});
 				t.start();
-				total_count = total_count - 1;
-				scanned.setText("" + total_count);
+				uploadnum--;
+				scanned.setText("" + uploadnum);
 			}
 
 			@Override
 			public HttpUriRequest getRequestMethod() {
-				// TODO Auto-generated method stub
+				// TODO Auto-generated method stub				
 				String urlp = "http://192.168.0.201/mary/sellrec/api/collect/"
 						+ id
 						+ "/?format=json&username=tomsu&api_key=123456&id="
@@ -284,6 +301,81 @@ public class DetailActivity extends Activity {
 		}.execute();
 	}
 
+	private void idQuery() {
+		offset = 0;
+		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
+				+ "offset="
+				+ offset
+				+ "&finished=0&task="
+				+ idMessage + "&p=0";
+		init = true;
+		hashtable.clear();
+		new HttpHandler() {
+
+			@Override
+			public void onResponse(String result) {
+				// TODO Auto-generated method stub
+				if (result == "") {
+					System.out.println("网络错误");
+				} else {					
+					resultstr = result.toString();
+					System.out.println(result);
+					Thread t = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+					t.start();
+					jsonObject = new JSONObject();
+					try {
+						jsonObject = new JSONObject(resultstr);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					if (init) {
+						try {
+							total_count = jsonObject.getJSONObject("meta")
+									.getInt("total_count");
+							init = false;
+							visnum = total_count;
+							uploadnum = total_count;
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					} else {
+						visnum -= 20;
+					}
+					if (visnum > 20) {
+						inithash();
+						offset += 20;
+						url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
+								+ "offset="
+								+ offset
+								+ "&finished=0&task="
+								+ idMessage + "&p=0";
+						new AsyncHttpTask(this).execute();
+					} else {
+						inithash();
+					}
+				}
+			}
+
+			@Override
+			public HttpUriRequest getRequestMethod() {
+				// TODO Auto-generated method stub				
+				return new HttpGet(url);
+			}
+		}.execute();
+	}
+	
 	private void httpQuery() {
 		dialog = new ProgressDialog(this);
 		dialog.setTitle("请稍等");
@@ -400,40 +492,35 @@ public class DetailActivity extends Activity {
 
 	public void doUpload(View v) {
 		if (scannedTimes == scanTimes) {
-			dopost();
+			dialog = new ProgressDialog(this);
+			dialog.setTitle("请稍等");
+			dialog.setMessage("正在上传");
+			dialog.show();
+			for (int j = 0; j < tmpList.size(); j++) {
+				hashtable.put(tmpList.get(j).toString(), "");
+				dopost(tmpList.get(j).toString());
+			}						
+			scannedTimes = 0;
+			tmpList.clear();			
 		} else {
 			state.setText("扫描未完成！");
 			state.setTextColor(Color.RED);
 		}
 	}
 
-	private void dopost() {
-		final String urlpath = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456";
-		dialog = new ProgressDialog(this);
-		dialog.setTitle("请稍等");
-		dialog.setMessage("正在上传");
-		dialog.show();
+	private void dopost(final String uid) {
+		final String urlpath = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456";		
 		new HttpHandler() {
 
 			@Override
 			public void onResponse(String result) {
 				// TODO Auto-generated method stub
 				System.out.println("post:" + result.toString());
-				uploadnum++;
+				uploadnum ++;
 				scanned.setText("" + uploadnum);
-				if (scannedTimes == 1)
-					barcode1.setText("");
-				else if (scannedTimes == 2)
-					barcode2.setText("");
-				else
-					barcode3.setText("");
-				state.setText("上传成功！请继续扫描！");
-				scannedTimes = 0;
-				scannedList.add(uploadCode);
-				uploadCode = "";
-				tmpList.clear();
-				adapter.notifyDataSetChanged();
-				scannedListV.setSelection(uploadnum - 1);
+				scannedList.add(uid);
+				
+				
 				Thread t = new Thread(new Runnable() {
 
 					@Override
@@ -441,7 +528,7 @@ public class DetailActivity extends Activity {
 						// TODO Auto-generated method stub
 						try {
 							Thread.sleep(500);
-							dialog.dismiss();
+							dialog.dismiss();idQuery();
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -449,6 +536,21 @@ public class DetailActivity extends Activity {
 					}
 				});
 				t.start();
+				adapter.notifyDataSetChanged();
+				scannedListV.setSelection(uploadnum - 1);
+				if (scannedTimes == 1)
+					barcode1.setText("");
+				else if (scannedTimes == 2){
+					barcode1.setText("");
+					barcode2.setText("");
+				}
+				else{
+					barcode1.setText("");
+					barcode2.setText("");
+					barcode3.setText("");
+				}
+				state.setText("上传成功！请继续扫描！");
+				state.setTextColor(Color.BLACK);
 				drawer.open();
 			}
 
@@ -457,11 +559,11 @@ public class DetailActivity extends Activity {
 				// TODO Auto-generated method stub
 				HttpPost httpPost = new HttpPost(urlpath);
 				try {
-					String json = "";
-					JSONObject jsonObject = new JSONObject();
-					jsonObject.accumulate("task", "/mary/sellrec/api/task/"
+					String json = "";										
+					JSONObject jsonObject = new JSONObject();					
+                    jsonObject.accumulate("task", "/mary/sellrec/api/task/"
 							+ idMessage + "/");
-					jsonObject.accumulate("UID", uploadCode);
+					jsonObject.accumulate("UID", uid);
 					json = jsonObject.toString();
 					StringEntity se = new StringEntity(json);
 					httpPost.setEntity(se);
@@ -493,9 +595,25 @@ public class DetailActivity extends Activity {
 
 		scannedTimes = 0;
 		tmpList.clear();
-		uploadCode = "";
 		state.setText("请重新扫描条码！");
 		state.setTextColor(Color.BLACK);
+	}
+	
+	private void inithash() {
+		int tempnum = total_count > 20 ? 20 : total_count;
+		for (int i = 0; i < tempnum; i++) {
+			String uid = "";
+			try {
+				uid = jsonObject.getJSONArray("objects").getJSONObject(i)
+						.getString("UID");
+				int id = jsonObject.getJSONArray("objects").getJSONObject(i)
+						.getInt("id");
+				hashtable.put(uid, "" + id);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void initList() {

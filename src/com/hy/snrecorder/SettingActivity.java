@@ -171,7 +171,7 @@ public class SettingActivity extends Activity {
 
 	private void inflateview(int index) {
 		ll = new LinearLayout(this);
-		ll.setPadding(20, 0, 20, 0);
+		ll.setPadding(40, 0, 40, 0);
 		ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT));
 		vg.addView(ll);
@@ -181,8 +181,8 @@ public class SettingActivity extends Activity {
 		np.setFocusable(true);
 		np.setFocusableInTouchMode(true);
 		np.setId(index);
-		LinearLayout.LayoutParams margin = new LinearLayout.LayoutParams(50,
-				60, 1.0f);
+		LinearLayout.LayoutParams margin = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT, 1.0f);
 		margin.gravity = Gravity.RIGHT;
 		// np.setLayoutParams(new LayoutParams(40, 50));
 		TextView tv = new TextView(this);
@@ -190,11 +190,10 @@ public class SettingActivity extends Activity {
 			tv.setText(R.string.length_limit2);
 		if (index == 1)
 			tv.setText(R.string.length_limit3);
-		tv.setTextSize(15);
+		tv.setTextSize(18);
 		LinearLayout.LayoutParams margin1 = new LinearLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
 		margin1.gravity = Gravity.CENTER_VERTICAL;
-		margin1.leftMargin = 30;
 		ll.addView(tv, margin1);
 		ll.addView(np, margin);		
 	}
