@@ -91,7 +91,7 @@ public class TaskActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		try {
 
-			Intent detail = new Intent(TaskActivity.this, DetailActivity.class);
+			Intent detail = new Intent(TaskActivity.this, RecordActivity.class);
 			detail.putExtra("idmessage", jsonObject.getJSONArray("objects")
 					.getJSONObject(position).getString("id"));
 			detail.putExtra("modelmessage", jsonObject.getJSONArray("objects")

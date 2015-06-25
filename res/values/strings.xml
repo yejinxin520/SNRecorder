@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">SNRecorder</string>
+    <string name="app_name">SN记录器</string>
     <string name="task">查看任务列表</string>
     <string name="tasktitle">所有任务</string>
     <string name="setting">设置</string>
@@ -18,7 +18,7 @@
     <string name="scan">扫描</string>
     <string name="clear">清除</string>
     <string name="uploadbtn">上传</string>
-    <string name="scanned">已扫描的</string>
+    <string name="scanned">已上传的</string>
     <string name="total">总数</string>
     <string name="barcode1">条码1</string>
     <string name="barcode2">条码2</string>

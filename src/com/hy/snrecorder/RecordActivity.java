@@ -52,7 +52,7 @@ import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.TextView;
 
 @SuppressWarnings("deprecation")
-public class DetailActivity extends Activity {
+public class RecordActivity extends Activity {
 
 	private int offset = 0;
 	private String idMessage, model, tasknumber, url, resultstr;
@@ -106,7 +106,7 @@ public class DetailActivity extends Activity {
 				state.setTextColor(Color.RED);
 			}
 			if (scannedTimes == scanTimes && autoUpload) {
-				dialog = new ProgressDialog(DetailActivity.this);
+				dialog = new ProgressDialog(RecordActivity.this);
 				dialog.setTitle("请稍等");
 				dialog.setMessage("正在上传");
 				dialog.show();
@@ -125,7 +125,7 @@ public class DetailActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.layout_details);
+		setContentView(R.layout.layout_record);
 		Intent intent = getIntent();
 		idMessage = intent.getStringExtra("idmessage");
 		model = intent.getStringExtra("modelmessage");
@@ -139,7 +139,7 @@ public class DetailActivity extends Activity {
 		tmpList = new ArrayList<String>();
 		httpQuery();
 
-		adapter = new ArrayAdapter<String>(DetailActivity.this,
+		adapter = new ArrayAdapter<String>(RecordActivity.this,
 				android.R.layout.simple_list_item_1, scannedList);
 
 		scannedListV.setAdapter(adapter);
@@ -213,7 +213,7 @@ public class DetailActivity extends Activity {
 					final String key = scannedList.get(position);
 					final String id = hashtable.get(key);
 					System.out.println(id);
-					Builder msgBox = new Builder(DetailActivity.this);
+					Builder msgBox = new Builder(RecordActivity.this);
 					msgBox.setTitle("提示");
 					msgBox.setMessage("您确定要删除这条记录吗");
 					msgBox.setPositiveButton("确定", new OnClickListener() {
@@ -388,7 +388,7 @@ public class DetailActivity extends Activity {
 				// TODO Auto-generated method stub
 				if (result == "") {
 					AlertDialog.Builder msgBox = new Builder(
-							DetailActivity.this);
+							RecordActivity.this);
 					msgBox.setTitle("提示");
 					msgBox.setMessage("网络错误，连接失败");
 					msgBox.setPositiveButton("确定", new OnClickListener() {
@@ -482,7 +482,7 @@ public class DetailActivity extends Activity {
 				Bundle bundle = new Bundle();
 				bundle.putString("barc", s);
 				msg.setData(bundle);
-				DetailActivity.this.handler.sendMessage(msg);
+				RecordActivity.this.handler.sendMessage(msg);
 
 			}
 		});
@@ -637,6 +637,12 @@ public class DetailActivity extends Activity {
 	private int dp2px(int dp) {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
 				getResources().getDisplayMetrics());
+	}
+	
+	public void doSet(View v) {
+		Intent intent = new Intent();
+		intent.setClass(this, SettingActivity.class);
+		startActivity(intent);
 	}
 
 	@Override
