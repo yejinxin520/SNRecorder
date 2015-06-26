@@ -9,63 +9,48 @@
         android:id="@+id/rltitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#fff" >
+        android:background="#069" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/setting"
-            android:textColor="#121212"
-            android:textSize="25sp" />
+            android:textColor="#fff"
+            android:textSize="25sp" 
+            android:textStyle="bold"
+            />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
             android:background="#b3b3b6" />
-    </RelativeLayout>
-
-    <LinearLayout
+        <LinearLayout
         android:id="@+id/llbot"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#069"
-        android:orientation="vertical" >
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#069" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/selector1"
+        android:orientation="vertical"
+        android:onClick="doConfirm"
+         >
+        <ImageView 
+            android:id="@+id/setbtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp" >
-
-            <Button
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/selector1"
-                android:onClick="doConfirm" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="@string/confirm"
-                android:textColor="#fff"
-                android:textSize="18sp" />
-        </RelativeLayout>
-    </LinearLayout>
+            android:background="@drawable/ic_confirm"
+            android:layout_gravity="center"
+            android:contentDescription="@string/app_name"            
+            />
+        </LinearLayout>
+        
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/llbot"
+        android:layout_height="match_parent"        
         android:layout_below="@id/rltitle" >
 
         <LinearLayout
