@@ -945,7 +945,8 @@ public class BarCodeReader
 		for ( iIdx = 0; iIdx < iNumReaders; ++iIdx )
 		{
 			BarCodeReader.getReaderInfo(iIdx, readerInfo);
-			if ( readerInfo.facing == BarCodeReader.ReaderInfo.BCRDR_FACING_BACK )
+			Log.d(TAG, "BarCodeReader: " + iIdx + ", " + readerInfo.facing + " " + readerInfo.orientation);
+			if ( readerInfo.facing == BarCodeReader.ReaderInfo.BCRDR_FACING_FRONT )
 			{
 				return(new BarCodeReader(iIdx));
 			}
