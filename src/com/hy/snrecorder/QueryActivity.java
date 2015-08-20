@@ -343,7 +343,7 @@ public class QueryActivity extends Activity {
 																			// and
 																			// above
 					else
-						bcr = BarCodeReader.open(1); // Android 2.3
+						bcr = BarCodeReader.open(); // Android 2.3
 
 					decodeMethod.decodeinit(bcr);
 					if (bcr == null) {
