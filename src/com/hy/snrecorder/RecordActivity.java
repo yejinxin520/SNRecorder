@@ -20,6 +20,7 @@ import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.hy.util.AsyncHttpTask;
 import com.hy.util.ConfigurationSet;
 import com.hy.util.HttpHandler;
+import com.hy.util.FileHandler;
 import com.motorolasolutions.adc.decoder.BarCodeReader;
 import com.motorolasolutions.adc.decoder.DecodeUtil;
 
@@ -28,6 +29,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -35,7 +37,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -73,6 +78,7 @@ public class RecordActivity extends Activity {
 	private BarCodeReader bcr = null;
 	private Hashtable<String, String> hashtable;
 	private SwipeMenuListView scannedListV;
+	private FileHandler offLineService;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -106,16 +112,54 @@ public class RecordActivity extends Activity {
 				state.setTextColor(Color.RED);
 			}
 			if (scannedTimes == scanTimes && autoUpload) {
-				dialog = new ProgressDialog(RecordActivity.this);
-				dialog.setTitle("请稍等");
-				dialog.setMessage("正在上传");
-				dialog.show();
-				for (int j = 0; j < tmpList.size(); j++) {
-					hashtable.put(tmpList.get(j).toString(), "");
-					dopost(tmpList.get(j).toString());
+				if(isNetWork(RecordActivity.this)){
+					dialog = new ProgressDialog(RecordActivity.this);
+					dialog.setTitle("请稍等");
+					dialog.setMessage("正在上传");
+					dialog.show();
+					for (int j = 0; j < tmpList.size(); j++) {
+						hashtable.put(tmpList.get(j).toString(), "");
+						if(!scannedList.contains(tmpList.get(j).toString())){					
+							dopost(tmpList.get(j).toString());
+						}
+						else {
+							state.setText("条码"+tmpList.get(j).toString()+"已存在！");
+							state.setTextColor(Color.RED);
+						}
+						
+					}
+					scannedTimes = 0;
+					tmpList.clear();
+				}else {
+					Builder msgBox = new Builder(RecordActivity.this);
+					msgBox.setTitle("提示");
+					msgBox.setMessage("没有可用网络，是否离线到本地");
+					msgBox.setPositiveButton("确定", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							// TODO Auto-generated method stub
+							String filename = model+".txt";
+							for (int j = 0; j < tmpList.size(); j++) {
+								hashtable.put(tmpList.get(j).toString(), "");
+								String barcode = tmpList.get(j).toString();
+								save(filename, barcode);
+							}
+							tmpList.clear();
+							scannedTimes = 0;
+						}
+					});
+					msgBox.setNegativeButton("取消", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							// TODO Auto-generated method stub
+
+						}
+					});
+					msgBox.create().show();
 				}
-				scannedTimes = 0;
-				tmpList.clear();
+				
 			}
 		};
 	};
@@ -126,6 +170,7 @@ public class RecordActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.layout_record);
+		offLineService = new FileHandler(this);
 		Intent intent = getIntent();
 		idMessage = intent.getStringExtra("idmessage");
 		model = intent.getStringExtra("modelmessage");
@@ -213,29 +258,47 @@ public class RecordActivity extends Activity {
 					final String key = scannedList.get(position);
 					final String id = hashtable.get(key);
 					System.out.println(id);
-					Builder msgBox = new Builder(RecordActivity.this);
-					msgBox.setTitle("提示");
-					msgBox.setMessage("您确定要删除这条记录吗");
-					msgBox.setPositiveButton("确定", new OnClickListener() {
+					if(!id.equals("")){
+						Builder msgBox = new Builder(RecordActivity.this);
+						msgBox.setTitle("提示");
+						msgBox.setMessage("您确定要删除这条记录吗");
+						msgBox.setPositiveButton("确定", new OnClickListener() {
 
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							// TODO Auto-generated method stub
-							httpDelete(id);
-							hashtable.remove(key);
-							scannedList.remove(position);
-							adapter.notifyDataSetChanged();
-						}
-					});
-					msgBox.setNegativeButton("取消", new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
+								httpDelete(id);
+								hashtable.remove(key);
+								scannedList.remove(position);
+								adapter.notifyDataSetChanged();
+							}
+						});
+						msgBox.setNegativeButton("取消", new OnClickListener() {
 
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							// TODO Auto-generated method stub
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
 
-						}
-					});
-					msgBox.create().show();
+							}
+						});
+						msgBox.create().show();
+					}
+					else {
+						idQuery();
+						Builder msgBox = new Builder(
+								RecordActivity.this);
+						msgBox.setTitle("提示");
+						msgBox.setMessage("数据异常，请重新删除！");
+						msgBox.setPositiveButton("确定", new OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
+								dialog.dismiss();
+							}
+						});
+						msgBox.create().show();
+					}
 					break;
 
 				default:
@@ -463,45 +526,102 @@ public class RecordActivity extends Activity {
 	}
 
 	public void doScan(View v) {
-		decodeMethod.doDecode();
-		Thread t = new Thread(new Runnable() {
+		if(bcr==null){
+			System.out.println("bcrnull");
+			Builder msgBox = new Builder(
+					RecordActivity.this);
+			msgBox.setTitle("提示");
+			msgBox.setMessage("未成功连接扫码服务，请重试！");
+			msgBox.setPositiveButton("确定", new OnClickListener() {
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					while (decodeMethod.getData().length() == 0) {
-						Thread.sleep(500);
-					}
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					// TODO Auto-generated method stub
+					dialog.dismiss();
 				}
-				String s = decodeMethod.getData().trim();
-				Message msg = new Message();
-				Bundle bundle = new Bundle();
-				bundle.putString("barc", s);
-				msg.setData(bundle);
-				RecordActivity.this.handler.sendMessage(msg);
+			});
+			msgBox.create().show();
+		}
+		else {
+			decodeMethod.doDecode();
+			Thread t = new Thread(new Runnable() {
 
-			}
-		});
-		t.start();
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						while (decodeMethod.getData().length() == 0) {
+							Thread.sleep(500);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					String s = decodeMethod.getData().trim();
+					Message msg = new Message();
+					Bundle bundle = new Bundle();
+					bundle.putString("barc", s);
+					msg.setData(bundle);
+					RecordActivity.this.handler.sendMessage(msg);
+
+				}
+			});
+			t.start();
+		}
+		
 
 	}
 
 	public void doUpload(View v) {
 		if (scannedTimes == scanTimes) {
-			dialog = new ProgressDialog(this);
-			dialog.setTitle("请稍等");
-			dialog.setMessage("正在上传");
-			dialog.show();
-			for (int j = 0; j < tmpList.size(); j++) {
-				hashtable.put(tmpList.get(j).toString(), "");
-				dopost(tmpList.get(j).toString());
-			}						
-			scannedTimes = 0;
-			tmpList.clear();			
+			if(isNetWork(RecordActivity.this)){
+				dialog = new ProgressDialog(RecordActivity.this);
+				dialog.setTitle("请稍等");
+				dialog.setMessage("正在上传");
+				dialog.show();
+				for (int j = 0; j < tmpList.size(); j++) {
+					hashtable.put(tmpList.get(j).toString(), "");
+					if(!scannedList.contains(tmpList.get(j).toString())){					
+						dopost(tmpList.get(j).toString());
+					}
+					else {
+						state.setText("条码"+tmpList.get(j).toString()+"已存在！");
+						state.setTextColor(Color.RED);
+					}
+					
+				}
+				scannedTimes = 0;
+				tmpList.clear();
+			}else {
+				Builder msgBox = new Builder(RecordActivity.this);
+				msgBox.setTitle("提示");
+				msgBox.setMessage("没有可用网络，是否离线到本地");
+				msgBox.setPositiveButton("确定", new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						// TODO Auto-generated method stub
+						String filename = model+".txt";
+						for (int j = 0; j < tmpList.size(); j++) {
+							hashtable.put(tmpList.get(j).toString(), "");
+							String barcode = tmpList.get(j).toString();
+							save(filename, barcode);
+						}
+						tmpList.clear();
+						scannedTimes = 0;
+					}
+				});
+				msgBox.setNegativeButton("取消", new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+				msgBox.create().show();
+			}
+						
 		} else {
 			state.setText("扫描未完成！");
 			state.setTextColor(Color.RED);
@@ -639,11 +759,22 @@ public class RecordActivity extends Activity {
 				getResources().getDisplayMetrics());
 	}
 	
-	public void doSet(View v) {
+	/*public void doSet(View v) {
 		Intent intent = new Intent();
 		intent.setClass(this, SettingActivity.class);
 		startActivity(intent);
 	}
+	<ImageView 
+            android:id="@+id/setbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector3"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/app_name"
+            android:onClick="doSet"
+            />
+	*/
 
 	@Override
 	protected void onPause() {
@@ -658,8 +789,12 @@ public class RecordActivity extends Activity {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		super.onResume();
+		super.onResume();		
+		initbcr();
+	}
 
+	private void initbcr() {
+		// TODO Auto-generated method stub
 		Thread t = new Thread(new Runnable() {
 
 			@Override
@@ -673,7 +808,7 @@ public class RecordActivity extends Activity {
 																			// and
 																			// above
 					else
-						bcr = BarCodeReader.open(1); // Android 2.3
+						bcr = BarCodeReader.open(); // Android 2.3
 
 					decodeMethod.decodeinit(bcr);
 					if (bcr == null) {
@@ -688,6 +823,67 @@ public class RecordActivity extends Activity {
 			}
 		});
 		t.start();
-
 	}
+
+	private Boolean isNetWork(Activity activity) {
+		Context context = activity.getApplicationContext();
+		ConnectivityManager connectivityManager = (ConnectivityManager)
+				context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if(connectivityManager == null){
+			return false;
+		}else {
+			NetworkInfo [] infos = connectivityManager.getAllNetworkInfo();
+			if(infos != null&&infos.length > 0){
+				for(int i=0;i<infos.length;i++){
+					System.out.println(i+"状态："+infos[i].getState());
+					System.out.println(i+"类型："+infos[i].getTypeName());
+					if(infos[i].getState() == NetworkInfo.State.CONNECTED){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	private void save(String filename,String barcode) {
+		dialog = new ProgressDialog(this);
+		dialog.setTitle("请稍等");
+		dialog.setMessage("正在离线保存");
+		dialog.show();
+		try {
+			offLineService.save(filename, barcode);
+			if (Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED)) {
+				offLineService.saveToSDCard(filename, barcode);
+				state.setText("保存成功");
+				state.setTextColor(Color.BLACK);
+				Thread t = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						try {
+							Thread.sleep(500);
+							dialog.dismiss();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+				t.start();
+			} else {
+				state.setText("sd卡不存在或被写入保护");
+				state.setTextColor(Color.RED);
+			}
+		} catch (Exception e) {
+			dialog.dismiss();
+			e.printStackTrace();
+			state.setText("离线保存失败");
+			state.setTextColor(Color.RED);
+			System.out.println("保存失败");
+		}
+	}
+	
 }
