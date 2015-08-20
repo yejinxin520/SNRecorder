@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:layout_marginTop="55dp"
+            android:layout_marginTop="40dp"
             android:background="@drawable/selector"
             android:onClick="doClick"
             android:orientation="horizontal" >
@@ -72,6 +72,43 @@
                 android:textColor="#121212"
                 android:textSize="20sp" />
         </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/offline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/selector"
+            android:onClick="doClick"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_offline" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="2"
+                android:text="@string/offline"
+                android:textColor="#121212"
+                android:textSize="20sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/query"
@@ -79,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/selector"
             android:onClick="doClick"
             android:orientation="horizontal" >
@@ -116,7 +153,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/selector"
             android:onClick="doClick"
             android:orientation="horizontal" >

@@ -101,6 +101,10 @@ public class MainActivity extends Activity {
 			}.execute();
 
 		}
+		if (v.equals((LinearLayout) findViewById(R.id.offline))) {
+			Intent offline = new Intent(this, OffLineActivity.class);
+			startActivity(offline);
+		}
 		if (v.equals((LinearLayout) findViewById(R.id.query))) {
 			Intent query = new Intent(this, QueryActivity.class);
 			startActivity(query);

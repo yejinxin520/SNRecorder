@@ -4,6 +4,7 @@
     <string name="task">查看任务列表</string>
     <string name="tasktitle">所有任务</string>
     <string name="setting">设置</string>
+    <string name="offline">离线扫码</string>
     <string name="query">查询记录</string>
     <string name="querybtn">查询</string>
     <string name="recorde">记录UID</string>
@@ -17,12 +18,13 @@
     <string name="confirm">确认</string>
     <string name="scan">扫描</string>
     <string name="clear">清除</string>
+    <string name="savebtn">保存</string>
     <string name="uploadbtn">上传</string>
     <string name="scanned">已上传的</string>
     <string name="total">总数</string>
-    <string name="barcode1">条码1</string>
-    <string name="barcode2">条码2</string>
-    <string name="barcode3">条码3</string>
+    <string name="barcode1">条码1:</string>
+    <string name="barcode2">条码2:</string>
+    <string name="barcode3">条码3:</string>
     <string name="timedout">decode timed out</string>
     <string name="cancel">decode cancelled</string>
     <string name="failed">decode failed</string>
@@ -30,6 +32,7 @@
     <string name="state">请扫描条码</string>
     <string name="querystate">请输入或扫描UID</string>
     <string name="load">loading</string>
+    <string name="localtxt">本地已保存</string>
     <string name="result">查询结果</string>
     <string name="repairt">维修记录</string>
     <string name="outt">出货记录</string>
