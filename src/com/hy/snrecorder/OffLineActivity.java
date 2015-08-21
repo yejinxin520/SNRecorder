@@ -33,7 +33,7 @@ public class OffLineActivity extends Activity {
 	private Spinner spinner;
 	private TextView barcode;
 	private ProgressDialog dialog;
-	private String filename,barcodestr;
+	private String filename,barcodestr,modelstr;
 	private int localnum=0;
 	private SwipeMenuListView localListV;
 	private Hashtable<String, String> localhash;
@@ -49,7 +49,12 @@ public class OffLineActivity extends Activity {
 			Bundle bundle = msg.getData();
 			String s = bundle.getString("barc");
 			if(localhash.containsKey(s)){
-				barcode.setText("该条码已离线到本地！");
+				if(localhash.get(s).equals(modelstr)){
+					barcode.setText("该条码已离线到本地！");
+				}
+				else {
+					barcode.setText("该条码已离线到机型"+localhash.get(s));
+				}
 			}else {
 				barcode.setText(s);
 				barcodestr = s;
@@ -88,6 +93,7 @@ public class OffLineActivity extends Activity {
 					int position, long id) {
 				// TODO Auto-generated method stub
 				filename = data_list.get(position)+".txt";
+				modelstr = data_list.get(position);
 				read(filename);
 				localadapter.notifyDataSetChanged();
 			}
@@ -148,7 +154,6 @@ public class OffLineActivity extends Activity {
 		t.start();
 	}
 	public void doSave(View v) {
-		filename = spinner.getSelectedItem().toString()+".txt";
 		if(!barcodestr.equals(""))
 			save(filename,barcodestr);		
 	}
@@ -167,7 +172,7 @@ public class OffLineActivity extends Activity {
 				offLineService.saveToSDCard(filename, barcodestr);	
 				locallist.add(barcodestr);
 				localnum++;
-				localhash.put(barcodestr, ""+localnum);
+				localhash.put(barcodestr, modelstr);
 				barcode.setText("");
 				Thread t = new Thread(new Runnable() {
 
@@ -219,7 +224,7 @@ public class OffLineActivity extends Activity {
 				localnum = filestr.length-1;
 				for(int i=0;i<filestr.length;i++){
 					locallist.add(filestr[i]);System.out.println(filestr[i]);
-					localhash.put(filestr[i], ""+i);
+					localhash.put(filestr[i], modelstr);
 				}
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
