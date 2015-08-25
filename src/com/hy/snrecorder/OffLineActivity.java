@@ -177,10 +177,14 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		t.start();
 	}
 	public void doSave(View v) {
-		if(!barcodestr.equals("")&&!scannedList.contains(barcodestr)){
-			save(filename,barcodestr);	
+		if(barcodestr!=null){
+			if(!scannedList.contains(barcodestr)){
+				save(filename,barcodestr);	
+			}else {
+				barcode.setText("条码已上传！");
+			}
 		}else {
-			barcode.setText("条码没扫描，或已上传！");
+			barcode.setText("条码没扫描！");
 		}
 	}
 	public void doClear(View v) {
