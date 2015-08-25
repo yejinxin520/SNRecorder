@@ -21,6 +21,7 @@ import com.hy.util.AsyncHttpTask;
 import com.hy.util.ConfigurationSet;
 import com.hy.util.HttpHandler;
 import com.hy.util.FileHandler;
+import com.hy.util.NetUtil;
 import com.motorolasolutions.adc.decoder.BarCodeReader;
 import com.motorolasolutions.adc.decoder.DecodeUtil;
 
@@ -29,7 +30,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -37,8 +37,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -52,6 +50,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SlidingDrawer;
+import android.widget.Toast;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.TextView;
@@ -112,7 +111,7 @@ public class RecordActivity extends Activity {
 				state.setTextColor(Color.RED);
 			}
 			if (scannedTimes == scanTimes && autoUpload) {
-				if(isNetWork(RecordActivity.this)){
+				if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
 					dialog = new ProgressDialog(RecordActivity.this);
 					dialog.setTitle("请稍等");
 					dialog.setMessage("正在上传");
@@ -258,46 +257,51 @@ public class RecordActivity extends Activity {
 					final String key = scannedList.get(position);
 					final String id = hashtable.get(key);
 					System.out.println(id);
-					if(!id.equals("")){
-						Builder msgBox = new Builder(RecordActivity.this);
-						msgBox.setTitle("提示");
-						msgBox.setMessage("您确定要删除这条记录吗");
-						msgBox.setPositiveButton("确定", new OnClickListener() {
+					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
+						if(!id.equals("")){
+							Builder msgBox = new Builder(RecordActivity.this);
+							msgBox.setTitle("提示");
+							msgBox.setMessage("您确定要删除这条记录吗");
+							msgBox.setPositiveButton("确定", new OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								// TODO Auto-generated method stub
-								httpDelete(id);
-								hashtable.remove(key);
-								scannedList.remove(position);
-								adapter.notifyDataSetChanged();
-							}
-						});
-						msgBox.setNegativeButton("取消", new OnClickListener() {
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									// TODO Auto-generated method stub
+									httpDelete(id);
+									hashtable.remove(key);
+									scannedList.remove(position);
+									adapter.notifyDataSetChanged();
+								}
+							});
+							msgBox.setNegativeButton("取消", new OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								// TODO Auto-generated method stub
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									// TODO Auto-generated method stub
 
-							}
-						});
-						msgBox.create().show();
-					}
-					else {
-						idQuery();
-						Builder msgBox = new Builder(
-								RecordActivity.this);
-						msgBox.setTitle("提示");
-						msgBox.setMessage("数据异常，请重新删除！");
-						msgBox.setPositiveButton("确定", new OnClickListener() {
+								}
+							});
+							msgBox.create().show();
+						}
+						else {
+							idQuery();
+							Builder msgBox = new Builder(
+									RecordActivity.this);
+							msgBox.setTitle("提示");
+							msgBox.setMessage("数据异常，请重试！");
+							msgBox.setPositiveButton("确定", new OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								// TODO Auto-generated method stub
-								dialog.dismiss();
-							}
-						});
-						msgBox.create().show();
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+								}
+							});
+							msgBox.create().show();
+						}
+					}else {
+						Toast.makeText(getApplicationContext(), "无网络连接！", 
+								Toast.LENGTH_SHORT).show();
 					}
 					break;
 
@@ -574,7 +578,7 @@ public class RecordActivity extends Activity {
 
 	public void doUpload(View v) {
 		if (scannedTimes == scanTimes) {
-			if(isNetWork(RecordActivity.this)){
+			if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
 				dialog = new ProgressDialog(RecordActivity.this);
 				dialog.setTitle("请稍等");
 				dialog.setMessage("正在上传");
@@ -823,27 +827,6 @@ public class RecordActivity extends Activity {
 			}
 		});
 		t.start();
-	}
-
-	private Boolean isNetWork(Activity activity) {
-		Context context = activity.getApplicationContext();
-		ConnectivityManager connectivityManager = (ConnectivityManager)
-				context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		if(connectivityManager == null){
-			return false;
-		}else {
-			NetworkInfo [] infos = connectivityManager.getAllNetworkInfo();
-			if(infos != null&&infos.length > 0){
-				for(int i=0;i<infos.length;i++){
-					System.out.println(i+"状态："+infos[i].getState());
-					System.out.println(i+"类型："+infos[i].getTypeName());
-					if(infos[i].getState() == NetworkInfo.State.CONNECTED){
-						return true;
-					}
-				}
-			}
-		}
-		return false;
 	}
 	
 	private void save(String filename,String barcode) {
