@@ -53,4 +53,16 @@ public class FileHandler {
                 return new String(b);
 
 	}
+	public static void  deleteFile(String filename){
+		File filepath = new File(Environment.getExternalStorageDirectory().getPath());
+		File file = new File(filepath, filename);
+		String sdState = Environment.getExternalStorageState();
+		if(sdState.equals(Environment.MEDIA_MOUNTED)){
+			if (file.exists()){
+				if (file.isFile()){
+					file.delete();
+					}
+				}
+			}
+    }
 }
