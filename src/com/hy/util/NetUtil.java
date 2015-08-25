@@ -16,14 +16,14 @@ public class NetUtil {
         // Wifi
         State state = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
                 .getState();
-        if (state == State.CONNECTED || state == State.CONNECTING) {
+        if (state == State.CONNECTED ) {
             return NETWORN_WIFI;
         }
 
         // 3G
         state = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
                 .getState();
-        if (state == State.CONNECTED || state == State.CONNECTING) {
+        if (state == State.CONNECTED ) {
             return NETWORN_MOBILE;
         }
         return NETWORN_NONE;
