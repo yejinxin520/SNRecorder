@@ -12,7 +12,11 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.hy.util.AsyncHttpTask;
 import com.hy.util.FileHandler;
 import com.hy.util.HttpHandler;
@@ -25,11 +29,17 @@ import com.motorolasolutions.adc.decoder.DecodeUtil;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -47,7 +57,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	private TextView barcode,netstate;
 	private Button uploadlocal;
 	private ProgressDialog dialog;
-	private String filename,barcodestr,modelstr,url,resultstr;
+	private String filename,barcodestr="",modelstr,url,resultstr;
 	private int localnum=0,offset = 0,total_count,visnum;
 	private Boolean init;
 	private JSONObject jsonObject;
@@ -134,7 +144,8 @@ public class OffLineActivity extends Activity implements netEventHandler{
         templist = new ArrayList<String>();
         localhash = new Hashtable<String, String>();
         localadapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,locallist);
-        localListV.setAdapter(localadapter);        
+        localListV.setAdapter(localadapter); 
+        initSwipeListView();
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -177,7 +188,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		t.start();
 	}
 	public void doSave(View v) {
-		if(barcodestr!=null){
+		if(barcodestr!=""){
 			if(!scannedList.contains(barcodestr)){
 				save(filename,barcodestr);	
 			}else {
@@ -245,6 +256,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				});
 				t.start();
 				if(locallist.isEmpty()){
+					netstate.setText("上传完成");
 					hander.sendEmptyMessage(1);
 					templist.clear();
 				}
@@ -282,7 +294,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 			offLineService.save(filename, barcodestr);
 			if (Environment.getExternalStorageState().equals(
 					Environment.MEDIA_MOUNTED)) {
-				offLineService.saveToSDCard(filename, barcodestr);	
+				offLineService.saveToSDCard(filename, barcodestr,true);	
 				locallist.add(barcodestr);
 				localnum++;
 				templist.add(barcodestr);
@@ -293,6 +305,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				}
 				
 				barcode.setText("");
+				this.barcodestr="";
 				Thread t = new Thread(new Runnable() {
 
 					@Override
@@ -328,15 +341,19 @@ public class OffLineActivity extends Activity implements netEventHandler{
                 localListV.setSelection(localnum);
                 break;
             case 1:
-            	netstate.setText("上传完成");
+            	
             	uploadlocal.setVisibility(View.GONE);
             	dialog.dismiss();
             	FileHandler.deleteFile(filename);
+            	break;
             case 2:
             	init = true;				
 				scannedList.clear();
 				httpQuery();
-				
+				break;
+			case 3:
+				reWritefile();
+				break;
             default:
                 break;
             }
@@ -376,8 +393,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				if (result == "") {
 					System.out.println("网络错误");
 				} else {					
-					resultstr = result.toString();
-					System.out.println(result.toString());
+					resultstr = result.toString();					
 					jsonObject = new JSONObject();
 					try {
 						jsonObject = new JSONObject(resultstr);
@@ -422,7 +438,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 					System.out.println("网络错误，连接失败");
 					
 				} else {
-					resultstr = result.toString();System.out.println(result.toString());
+					resultstr = result.toString();
 					Thread t = new Thread(new Runnable() {
 
 						@Override
@@ -493,6 +509,118 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		}
 	}
 	
+	private void initSwipeListView(){
+		SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+			@Override
+			public void create(SwipeMenu menu) {
+				// TODO Auto-generated method stub
+
+				SwipeMenuItem deleteItem = new SwipeMenuItem(
+						getApplicationContext());
+				deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+						0x3F, 0x25)));
+				deleteItem.setWidth(dp2px(90));
+				deleteItem.setIcon(R.drawable.ic_delete);
+				menu.addMenuItem(deleteItem);
+			}
+		};
+		localListV.setMenuCreator(creator);
+		localListV.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+			@Override
+			public void onMenuItemClick(final int position, SwipeMenu menu,
+					int index) {
+				// TODO Auto-generated method stub
+				switch (index) {
+				case 0:
+					Builder msgBox = new Builder(OffLineActivity.this);
+					msgBox.setTitle("提示");
+					msgBox.setMessage("您确定要删除这条记录吗");
+					msgBox.setPositiveButton("确定", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							// TODO Auto-generated method stub
+							localhash.remove(locallist.get(position));
+							locallist.remove(position);
+							templist.remove(position);
+							localadapter.notifyDataSetChanged();
+							//FileHandler.deleteFile(filename);
+							hander.sendEmptyMessage(3);
+						}
+					});
+					msgBox.setNegativeButton("取消", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							// TODO Auto-generated method stub
+
+						}
+					});
+					msgBox.create().show();
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	}
+	private int dp2px(int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+				getResources().getDisplayMetrics());
+	}
+	private void reWritefile(){
+		String tempstr="";
+		//int i=0;
+		if(!locallist.isEmpty()){
+			for(int i=0;i<locallist.size()-1;i++){
+				
+				tempstr += locallist.get(i)+",";
+			}
+			tempstr += locallist.get(locallist.size()-1);
+			rsave(tempstr);
+		}else {
+			//FileHandler.deleteFile(filename);
+			netstate.setText("本地无内容");
+			hander.sendEmptyMessage(1);
+		}
+	}
+	private void rsave(String tempstr){
+		dialog = new ProgressDialog(this);
+		dialog.setTitle("请稍等");
+		dialog.setMessage("正在删除");
+		dialog.show();
+		try {
+			if (Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED)) {
+				offLineService.saveToSDCard(filename, tempstr,false);					
+				Thread t = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						try {
+							Thread.sleep(500);
+							dialog.dismiss();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+				t.start();
+				Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(getApplicationContext(), "sd卡不存在或被写入保护", Toast.LENGTH_SHORT).show();
+			}
+		} catch (Exception e) {
+			dialog.dismiss();
+			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), "删除失败", Toast.LENGTH_SHORT).show();
+		}
+	}
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
