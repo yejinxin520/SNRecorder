@@ -838,7 +838,7 @@ public class RecordActivity extends Activity {
 			offLineService.save(filename, barcode);
 			if (Environment.getExternalStorageState().equals(
 					Environment.MEDIA_MOUNTED)) {
-				offLineService.saveToSDCard(filename, barcode);
+				offLineService.saveToSDCard(filename, barcode,true);
 				state.setText("±£´æ³É¹¦");
 				state.setTextColor(Color.BLACK);
 				Thread t = new Thread(new Runnable() {

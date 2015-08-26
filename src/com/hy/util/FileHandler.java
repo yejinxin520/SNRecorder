@@ -23,10 +23,10 @@ public class FileHandler {
 		save(filename, content, Context.MODE_PRIVATE);
 	}
 	@SuppressLint("SdCardPath")
-	public void saveToSDCard(String filename,String content) throws Exception{
+	public void saveToSDCard(String filename,String content,Boolean append) throws Exception{
 		File filepath = new File(Environment.getExternalStorageDirectory().getPath());
 		File file = new File(filepath, filename);
-		FileOutputStream fops = new FileOutputStream(file, true);
+		FileOutputStream fops = new FileOutputStream(file, append);
 		fops.write(content.getBytes());
 		fops.write(",".getBytes());
 		fops.close();
