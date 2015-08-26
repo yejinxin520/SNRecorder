@@ -258,7 +258,7 @@ public class RecordActivity extends Activity {
 					final String id = hashtable.get(key);
 					System.out.println(id);
 					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
-						if(!id.equals("")){
+						if(id!=null){
 							Builder msgBox = new Builder(RecordActivity.this);
 							msgBox.setTitle("提示");
 							msgBox.setMessage("您确定要删除这条记录吗");
