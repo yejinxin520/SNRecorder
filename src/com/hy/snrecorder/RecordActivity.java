@@ -314,12 +314,12 @@ public class RecordActivity extends Activity {
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		System.out.println(event.getKeyCode());
-		if (((keyCode == 135) || (keyCode == 136) )
+		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
 			doScan(findViewById(R.id.scanbtn));
 			return true;
 		}
-		if(keyCode == 137&& event.getAction() == KeyEvent.ACTION_DOWN){
+		if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
 			doUpload(findViewById(R.id.ulbtn));
 			return true;
 		}
