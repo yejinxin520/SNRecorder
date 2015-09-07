@@ -258,7 +258,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 							dopost(templist.get(j).toString());	
 					}
 					else {
-						Toast.makeText(getApplicationContext(), "条码"+templist.get(j).toString()+"已记录", 
+						Toast.makeText(getApplicationContext(), "条码"+templist.get(j).toString()+"重复记录，将删除！", 
 								Toast.LENGTH_SHORT).show();
 						locallist.remove(templist.get(j).toString());
 						if(locallist.isEmpty()){
