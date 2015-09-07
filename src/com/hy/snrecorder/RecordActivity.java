@@ -30,8 +30,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -57,7 +60,13 @@ import android.widget.TextView;
 
 @SuppressWarnings("deprecation")
 public class RecordActivity extends Activity {
-
+	public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+	public static final String KEY_BARCODE_STR = "key_barcode_string";
+	private BarcodeReceiver barcodeReceiver;
+	public static final String KEY_ACTION = "KEY_ACTION";
+	public static final String TONE = "TONE=100";
+	private Intent intentService = new Intent(
+			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private int offset = 0;
 	private String idMessage, model, tasknumber, url, resultstr;
 	private Boolean autoUpload, init;
@@ -84,82 +93,88 @@ public class RecordActivity extends Activity {
 			super.handleMessage(msg);
 			Bundle bundle = msg.getData();
 			String s = bundle.getString("barc");
-			if (scannedTimes < scanTimes) {
-				if (s.length() == barcodelimit[scannedTimes]
-						|| barcodelimit[scannedTimes] == 0) {
-					if (hashtable.containsKey(s) || tmpList.contains(s)) {
-						state.setText("条码已记录或已扫描，请重新扫描！");
+			if(uploadnum < Integer.parseInt(tasknumber)){
+				if (scannedTimes < scanTimes) {
+					if (s.length() == barcodelimit[scannedTimes]
+							|| barcodelimit[scannedTimes] == 0) {
+						if (hashtable.containsKey(s) || tmpList.contains(s)) {
+							state.setText("条码已记录或已扫描，请重新扫描！");
+							state.setTextColor(Color.RED);
+						} else {						
+							if (scannedTimes == 0)
+								barcode1.setText(s);
+							else if (scannedTimes == 1)
+								barcode2.setText(s);
+							else
+								barcode3.setText(s);
+							tmpList.add(s);
+							scannedTimes++;
+							state.setText("条码" + scannedTimes + "扫描完成");
+							state.setTextColor(Color.BLACK);
+						}
+					} else {
+						state.setText("条码长度不匹配");
 						state.setTextColor(Color.RED);
-					} else {						
-						if (scannedTimes == 0)
-							barcode1.setText(s);
-						else if (scannedTimes == 1)
-							barcode2.setText(s);
-						else
-							barcode3.setText(s);
-						tmpList.add(s);
-						scannedTimes++;
-						state.setText("条码" + scannedTimes + "扫描完成");
-						state.setTextColor(Color.BLACK);
 					}
 				} else {
-					state.setText("条码长度不匹配");
+					state.setText("扫描已完成，请上传或者清除");
 					state.setTextColor(Color.RED);
 				}
-			} else {
-				state.setText("扫描已完成，请上传或者清除");
+				if (scannedTimes == scanTimes && autoUpload) {
+					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
+						dialog = new ProgressDialog(RecordActivity.this);
+						dialog.setTitle("请稍等");
+						dialog.setMessage("正在上传");
+						dialog.show();
+						for (int j = 0; j < tmpList.size(); j++) {
+							hashtable.put(tmpList.get(j).toString(), "");
+							if(!scannedList.contains(tmpList.get(j).toString())){					
+								dopost(tmpList.get(j).toString());
+							}
+							else {
+								state.setText("条码"+tmpList.get(j).toString()+"已存在！");
+								state.setTextColor(Color.RED);
+							}
+							
+						}
+						scannedTimes = 0;
+						tmpList.clear();
+					}else {
+						Builder msgBox = new Builder(RecordActivity.this);
+						msgBox.setTitle("提示");
+						msgBox.setMessage("没有可用网络，是否离线到本地");
+						msgBox.setPositiveButton("确定", new OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
+								String filename = model+".txt";
+								for (int j = 0; j < tmpList.size(); j++) {
+									hashtable.put(tmpList.get(j).toString(), "");
+									String barcode = tmpList.get(j).toString();
+									save(filename, barcode);
+								}
+								tmpList.clear();
+								scannedTimes = 0;
+							}
+						});
+						msgBox.setNegativeButton("取消", new OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
+
+							}
+						});
+						msgBox.create().show();
+					}
+					
+				}
+			}else {
+				state.setText("任务已经完成了！");
 				state.setTextColor(Color.RED);
 			}
-			if (scannedTimes == scanTimes && autoUpload) {
-				if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
-					dialog = new ProgressDialog(RecordActivity.this);
-					dialog.setTitle("请稍等");
-					dialog.setMessage("正在上传");
-					dialog.show();
-					for (int j = 0; j < tmpList.size(); j++) {
-						hashtable.put(tmpList.get(j).toString(), "");
-						if(!scannedList.contains(tmpList.get(j).toString())){					
-							dopost(tmpList.get(j).toString());
-						}
-						else {
-							state.setText("条码"+tmpList.get(j).toString()+"已存在！");
-							state.setTextColor(Color.RED);
-						}
-						
-					}
-					scannedTimes = 0;
-					tmpList.clear();
-				}else {
-					Builder msgBox = new Builder(RecordActivity.this);
-					msgBox.setTitle("提示");
-					msgBox.setMessage("没有可用网络，是否离线到本地");
-					msgBox.setPositiveButton("确定", new OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							// TODO Auto-generated method stub
-							String filename = model+".txt";
-							for (int j = 0; j < tmpList.size(); j++) {
-								hashtable.put(tmpList.get(j).toString(), "");
-								String barcode = tmpList.get(j).toString();
-								save(filename, barcode);
-							}
-							tmpList.clear();
-							scannedTimes = 0;
-						}
-					});
-					msgBox.setNegativeButton("取消", new OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							// TODO Auto-generated method stub
-
-						}
-					});
-					msgBox.create().show();
-				}
-				
-			}
+			
 		};
 	};
 
@@ -177,6 +192,10 @@ public class RecordActivity extends Activity {
 		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
 				+ "offset=" + offset + "&finished=0&task=" + idMessage + "&p=0";
 		init = true;
+		
+		intentService.putExtra(KEY_ACTION, TONE);
+		this.startService(intentService);
+		
 		scannedListV = (SwipeMenuListView) findViewById(R.id.contentlist);
 		hashtable = new Hashtable<String, String>();
 		scannedList = new ArrayList<String>();
@@ -316,7 +335,10 @@ public class RecordActivity extends Activity {
 		System.out.println(event.getKeyCode());
 		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			doScan(findViewById(R.id.scanbtn));
+			if(bcr!=null){
+				doScan(findViewById(R.id.scanbtn));
+			}
+			
 			return true;
 		}
 		if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
@@ -531,20 +553,15 @@ public class RecordActivity extends Activity {
 
 	public void doScan(View v) {
 		if(bcr==null){
-			System.out.println("bcrnull");
-			Builder msgBox = new Builder(
-					RecordActivity.this);
-			msgBox.setTitle("提示");
-			msgBox.setMessage("未成功连接扫码服务，请重试！");
-			msgBox.setPositiveButton("确定", new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {
-					// TODO Auto-generated method stub
-					dialog.dismiss();
-				}
-			});
-			msgBox.create().show();
+			intentService.putExtra(KEY_ACTION, "UP");
+			this.startService(intentService);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			intentService.putExtra(KEY_ACTION, "DOWN");
+			this.startService(intentService);
 		}
 		else {
 			decodeMethod.doDecode();
@@ -762,23 +779,6 @@ public class RecordActivity extends Activity {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
 				getResources().getDisplayMetrics());
 	}
-	
-	/*public void doSet(View v) {
-		Intent intent = new Intent();
-		intent.setClass(this, SettingActivity.class);
-		startActivity(intent);
-	}
-	<ImageView 
-            android:id="@+id/setbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector3"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
-            android:contentDescription="@string/app_name"
-            android:onClick="doSet"
-            />
-	*/
 
 	@Override
 	protected void onPause() {
@@ -788,12 +788,17 @@ public class RecordActivity extends Activity {
 			bcr.release();
 			bcr = null;
 		}
+		unregisterReceiver(barcodeReceiver);
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		super.onResume();		
+		super.onResume();	
+		intentService.putExtra(KEY_ACTION, "INIT");
+		this.startService(intentService);
+		barcodeReceiver = new BarcodeReceiver(this);
+        barcodeReceiver.registerAction(ACTION_BARCODE_SERVICE_BROADCAST);
 		initbcr();
 	}
 
@@ -868,5 +873,39 @@ public class RecordActivity extends Activity {
 			System.out.println("保存失败");
 		}
 	}
-	
+	class BarcodeReceiver extends BroadcastReceiver {
+
+		public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+		public static final String KEY_BARCODE_STR = "key_barcode_string";
+		Context ct=null;
+	    BroadcastReceiver receiver;
+	    String barcodeString="";
+		public BarcodeReceiver(Context context) {
+			// TODO Auto-generated constructor stub
+			ct = context;
+			receiver=this;
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ACTION_BARCODE_SERVICE_BROADCAST)){
+				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);				
+			}
+			if(barcodeString.length()>0){
+				Message msg = new Message();
+				Bundle bundle = new Bundle();
+				bundle.putString("barc", barcodeString);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+			}
+		}
+
+		//注册
+	    public void registerAction(String action){
+	        IntentFilter filter=new IntentFilter();
+	        filter.addAction(action);
+	        ct.registerReceiver(receiver, filter);
+	    }
+	    
+	}
 }
