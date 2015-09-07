@@ -16,8 +16,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -40,6 +43,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class QueryActivity extends Activity {
+	public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+	public static final String KEY_BARCODE_STR = "key_barcode_string";
+	private BarcodeReceiver barcodeReceiver;
+	public static final String KEY_ACTION = "KEY_ACTION";
+	public static final String TONE = "TONE=100";
+	private Intent intentService = new Intent(
+			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private String url;
 	private int total, count;
 	private List<String> queryList;
@@ -76,6 +86,8 @@ public class QueryActivity extends Activity {
 		clearimg = (ImageButton) findViewById(R.id.clearimg);
 		uidactv = (AutoCompleteTextView) findViewById(R.id.uidactv);
 		initHistory();
+		intentService.putExtra(KEY_ACTION, TONE);
+		this.startService(intentService);
 		TextWatcher textWatcher = new TextWatcher() {
 			CharSequence temp;
 
@@ -145,7 +157,9 @@ public class QueryActivity extends Activity {
 		System.out.println(event.getKeyCode());
 		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			doScan(findViewById(R.id.qscanbtn));
+			if(bcr!=null){
+				doScan(findViewById(R.id.qscanbtn));
+			}
 			return true;
 		}
 		if(keyCode == KeyEvent.KEYCODE_ENTER&& event.getAction() == KeyEvent.ACTION_DOWN){
@@ -156,30 +170,43 @@ public class QueryActivity extends Activity {
 	}
 
 	public void doScan(View v) {
-		decodeMethod.doDecode();
-		Thread t = new Thread(new Runnable() {
+		if(bcr!=null){
+			decodeMethod.doDecode();
+			Thread t = new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					while (decodeMethod.getData().length() == 0) {
-						Thread.sleep(500);
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						while (decodeMethod.getData().length() == 0) {
+							Thread.sleep(500);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				String s = decodeMethod.getData().trim();
-				Message msg = new Message();
-				Bundle bundle = new Bundle();
-				bundle.putString("barc", s);
-				msg.setData(bundle);
-				QueryActivity.this.handler.sendMessage(msg);
+					String s = decodeMethod.getData().trim();
+					Message msg = new Message();
+					Bundle bundle = new Bundle();
+					bundle.putString("barc", s);
+					msg.setData(bundle);
+					QueryActivity.this.handler.sendMessage(msg);
 
+				}
+			});
+			t.start();
+		}else {
+			intentService.putExtra(KEY_ACTION, "UP");
+			this.startService(intentService);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		});
-		t.start();
+			intentService.putExtra(KEY_ACTION, "DOWN");
+			this.startService(intentService);
+		}
+		
 	}
 
 	public void doQuery(View v) {
@@ -323,13 +350,17 @@ public class QueryActivity extends Activity {
 			bcr.release();
 			bcr = null;
 		}
+		unregisterReceiver(barcodeReceiver);
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-
+		intentService.putExtra(KEY_ACTION, "INIT");
+		this.startService(intentService);
+		barcodeReceiver = new BarcodeReceiver(this);
+        barcodeReceiver.registerAction(ACTION_BARCODE_SERVICE_BROADCAST);
 		Thread t = new Thread(new Runnable() {
 
 			@Override
@@ -359,5 +390,40 @@ public class QueryActivity extends Activity {
 		});
 		t.start();
 
+	}
+	class BarcodeReceiver extends BroadcastReceiver {
+
+		public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+		public static final String KEY_BARCODE_STR = "key_barcode_string";
+		Context ct=null;
+	    BroadcastReceiver receiver;
+	    String barcodeString="";
+		public BarcodeReceiver(Context context) {
+			// TODO Auto-generated constructor stub
+			ct = context;
+			receiver=this;
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ACTION_BARCODE_SERVICE_BROADCAST)){
+				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);				
+			}
+			if(barcodeString.length()>0){
+				Message msg = new Message();
+				Bundle bundle = new Bundle();
+				bundle.putString("barc", barcodeString);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+			}
+		}
+
+		//зЂВс
+	    public void registerAction(String action){
+	        IntentFilter filter=new IntentFilter();
+	        filter.addAction(action);
+	        ct.registerReceiver(receiver, filter);
+	    }
+	    
 	}
 }
