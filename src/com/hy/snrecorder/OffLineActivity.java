@@ -30,7 +30,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -53,16 +57,23 @@ import android.widget.Toast;
 
 public class OffLineActivity extends Activity implements netEventHandler{
 
+	public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+	public static final String KEY_BARCODE_STR = "key_barcode_string";
+	private BarcodeReceiver barcodeReceiver;
+	public static final String KEY_ACTION = "KEY_ACTION";
+	public static final String TONE = "TONE=100";
+	private Intent intentService = new Intent(
+			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private Spinner spinner;
 	private TextView barcode,netstate;
 	private Button uploadlocal;
 	private ProgressDialog dialog;
 	private String filename,barcodestr="",modelstr,url,resultstr;
-	private int localnum=0,offset = 0,total_count,visnum;
+	private int localnum=0,offset = 0,total_count,visnum,total;
 	private Boolean init;
 	private JSONObject jsonObject;
 	private SwipeMenuListView localListV;
-	private Hashtable<String, String> localhash,idhash;
+	private Hashtable<String, String> localhash,idhash,tasknumhash;
 	private List<String> data_list,locallist,scannedList,templist;
 	private ArrayAdapter<String> arr_adapter,localadapter;
 	private FileHandler offLineService;
@@ -95,6 +106,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.layout_offline);
 		idhash = new Hashtable<String, String>();
+		tasknumhash = new Hashtable<String, String>();
 		data_list = new ArrayList<String>();
 		scannedList = new ArrayList<String>();
 		//idQuery();
@@ -107,12 +119,26 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		localListV = (SwipeMenuListView)findViewById(R.id.locallist);
 		
         data_list.add("For TEST");
-        data_list.add("V68");
-        data_list.add("P1230");
+        data_list.add("V68");        
         data_list.add("PE900S");
+        data_list.add("RD1000");
+        data_list.add("RD2000");
+        data_list.add("RD3000");
+        data_list.add("RD5000");
+        data_list.add("P1230");
         data_list.add("P1213");
+        data_list.add("P1202");
+        data_list.add("P1512");
         data_list.add("P1522");
+        data_list.add("P1500");
         data_list.add("PD805");
+        data_list.add("PD800");
+        data_list.add("PD801");
+        data_list.add("AP7200");
+        data_list.add("P1302");
+        data_list.add("P1312");
+        data_list.add("P1322");
+        
       //适配器
         arr_adapter= new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, data_list);
         //设置样式
@@ -145,14 +171,18 @@ public class OffLineActivity extends Activity implements netEventHandler{
         localhash = new Hashtable<String, String>();
         localadapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,locallist);
         localListV.setAdapter(localadapter); 
-        initSwipeListView();
+        initSwipeListView();  
+        intentService.putExtra(KEY_ACTION, TONE);
+		this.startService(intentService);
 	}
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		System.out.println(event.getKeyCode());
 		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			doScan(findViewById(R.id.qscanbtn));
+			if(bcr!=null){
+				doScan(findViewById(R.id.qscanbtn));
+			}
 			return true;
 		}
 		if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
@@ -162,30 +192,43 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		return super.onKeyDown(keyCode, event);
 	}
 	public void doScan(View v) {
-		decodeMethod.doDecode();
-		Thread t = new Thread(new Runnable() {
+		if(bcr!=null){
+			decodeMethod.doDecode();
+			Thread t = new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					while (decodeMethod.getData().length() == 0) {
-						Thread.sleep(500);
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						while (decodeMethod.getData().length() == 0) {
+							Thread.sleep(500);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				String s = decodeMethod.getData().trim();
-				Message msg = new Message();
-				Bundle bundle = new Bundle();
-				bundle.putString("barc", s);
-				msg.setData(bundle);
-				OffLineActivity.this.handler.sendMessage(msg);
+					String s = decodeMethod.getData().trim();
+					Message msg = new Message();
+					Bundle bundle = new Bundle();
+					bundle.putString("barc", s);
+					msg.setData(bundle);
+					OffLineActivity.this.handler.sendMessage(msg);
 
+				}
+			});
+			t.start();
+		}else {
+			intentService.putExtra(KEY_ACTION, "UP");
+			this.startService(intentService);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		});
-		t.start();
+			intentService.putExtra(KEY_ACTION, "DOWN");
+			this.startService(intentService);
+		}
+		
 	}
 	public void doSave(View v) {
 		if(barcodestr!=""){
@@ -208,20 +251,41 @@ public class OffLineActivity extends Activity implements netEventHandler{
 			dialog.setTitle("请稍等");
 			dialog.setMessage("正在上传");
 			dialog.show();
-			for (int j = 0; j < templist.size(); j++) {
-				if(!scannedList.contains(templist.get(j).toString())){					
-					dopost(templist.get(j).toString());			
-				}
-				else {
-					Toast.makeText(getApplicationContext(), "条码"+templist.get(j).toString()+"已记录", 
-							Toast.LENGTH_SHORT).show();
-					locallist.remove(templist.get(j).toString());
-					//dialog.dismiss();
-					if(locallist.isEmpty()){
-						hander.sendEmptyMessage(1);
-						templist.clear();
+			int totaltemp = total;
+			if(templist.size()+totaltemp <= Integer.parseInt(tasknumhash.get(modelstr))){
+				for (int j = 0; j < templist.size(); j++) {
+					if(!scannedList.contains(templist.get(j).toString())){						
+							dopost(templist.get(j).toString());	
+					}
+					else {
+						Toast.makeText(getApplicationContext(), "条码"+templist.get(j).toString()+"已记录", 
+								Toast.LENGTH_SHORT).show();
+						locallist.remove(templist.get(j).toString());
+						if(locallist.isEmpty()){
+							hander.sendEmptyMessage(1);
+							templist.clear();
+						}
 					}
 				}
+			}else {
+				int temp = templist.size()+total-Integer.parseInt(tasknumhash.get(modelstr));
+				Builder msgBox = new Builder(OffLineActivity.this);
+				msgBox.setTitle("提示");
+				if(total==Integer.parseInt(tasknumhash.get(modelstr))){
+					msgBox.setMessage("任务已完成");
+				}else {
+					msgBox.setMessage("本地保存超过任务数，请删除"+temp+"条记录");
+				}
+				
+				msgBox.setPositiveButton("确定", new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						// TODO Auto-generated method stub
+						dialog.dismiss();
+					}
+				});				
+				msgBox.create().show();
 			}
 		}
 		
@@ -238,6 +302,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				scannedList.add(uid);
 				locallist.remove(uid);
 				localnum--;
+				total++;System.out.println(total);
 				localhash.remove(uid);
 				Thread t = new Thread(new Runnable() {
 
@@ -256,7 +321,12 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				});
 				t.start();
 				if(locallist.isEmpty()){
-					netstate.setText("上传完成");
+					if(total == Integer.parseInt(tasknumhash.get(modelstr))){
+						netstate.setText("上传完成");
+					}else if(total < Integer.parseInt(tasknumhash.get(modelstr))){
+						netstate.setText("还差"+(Integer.parseInt(tasknumhash.get(modelstr))-total)+"个条码");
+					}
+					
 					hander.sendEmptyMessage(1);
 					templist.clear();
 				}
@@ -296,12 +366,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 					Environment.MEDIA_MOUNTED)) {
 				offLineService.saveToSDCard(filename, barcodestr,true);	
 				locallist.add(barcodestr);
-				localnum++;
+				localnum++;				
 				templist.add(barcodestr);
 				localhash.put(barcodestr, modelstr);
 				if(NetUtil.getNetworkState(this)!=NetUtil.NETWORN_NONE){
-					netstate.setText("检测到已连接wifi是否上传？");
-					uploadlocal.setVisibility(View.VISIBLE);
+					hander.sendEmptyMessage(4);
 				}
 				
 				barcode.setText("");
@@ -354,6 +423,15 @@ public class OffLineActivity extends Activity implements netEventHandler{
 			case 3:
 				reWritefile();
 				break;
+			case 4:
+				if(idhash.containsKey(modelstr)){
+        			netstate.setText("检测到已连接wifi是否上传？");
+            		uploadlocal.setVisibility(View.VISIBLE);
+        		}else {
+            		netstate.setText("已连接wifi,但无此任务");
+            		uploadlocal.setVisibility(View.GONE);
+    			}
+				break;
             default:
                 break;
             }
@@ -385,7 +463,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	private void idQuery() {		
 		url = "http://192.168.0.201/mary/sellrec/api/task/"
 				+ "?formfat=json?&username=tomsu&api_key=123456&finished=0&p=0";
-		new HttpHandler() {
+		new HttpHandler() {			
 
 			@Override
 			public void onResponse(String result) {
@@ -393,7 +471,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				if (result == "") {
 					System.out.println("网络错误");
 				} else {					
-					resultstr = result.toString();					
+					resultstr = result.toString();				
 					jsonObject = new JSONObject();
 					try {
 						jsonObject = new JSONObject(resultstr);
@@ -407,7 +485,10 @@ public class OffLineActivity extends Activity implements netEventHandler{
 								String id =jsonObject.getJSONArray("objects").getJSONObject(i).getString("id");
 								String model = jsonObject.getJSONArray("objects")
 										.getJSONObject(i).getString("model");
-								idhash.put(model,id);								
+								String taskNum = jsonObject.getJSONArray("objects")
+								.getJSONObject(i).getString("number");
+								idhash.put(model,id);	
+								tasknumhash.put(model, taskNum);
 							}
 							hander.sendEmptyMessage(2);
 						}
@@ -427,71 +508,77 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	}
 	private void httpQuery() {
 		offset = 0;
-		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
-				+ "offset=" + offset + "&finished=0&task=" + idhash.get(modelstr) + "&p=0";
-		new HttpHandler() {
+		if(idhash.containsKey(modelstr)){
+			url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
+					+ "offset=" + offset + "&finished=0&task=" + idhash.get(modelstr) + "&p=0";
+			new HttpHandler() {
 
-			@Override
-			public void onResponse(String result) {
-				// TODO Auto-generated method stub
-				if (result == "") {					
-					System.out.println("网络错误，连接失败");
-					
-				} else {
-					resultstr = result.toString();
-					Thread t = new Thread(new Runnable() {
+				@Override
+				public void onResponse(String result) {
+					// TODO Auto-generated method stub
+					if (result == "") {					
+						System.out.println("网络错误，连接失败");
+						
+					} else {
+						resultstr = result.toString();
+						Thread t = new Thread(new Runnable() {
 
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								try {
+									Thread.sleep(500);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
-						}
-					});
-					t.start();
-					jsonObject = new JSONObject();
-					try {
-						jsonObject = new JSONObject(resultstr);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					if (init) {
+						});
+						t.start();
+						jsonObject = new JSONObject();
 						try {
-							total_count = jsonObject.getJSONObject("meta")
-									.getInt("total_count");
-							init = false;
-							visnum = total_count;
-						} catch (JSONException e) {
+							jsonObject = new JSONObject(resultstr);
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					} else {
-						visnum -= 20;
-					}
-					if (visnum > 20) {
-						initList();
-						offset += 20;
-						url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
-								+ "offset="
-								+ offset
-								+ "&finished=0&task="
-								+ idhash.get(modelstr) + "&p=0";
-						new AsyncHttpTask(this).execute();
-					} else {
-						initList();
+						if (init) {
+							try {
+								total_count = jsonObject.getJSONObject("meta")
+										.getInt("total_count");
+								init = false;
+								visnum = total_count;
+								total = total_count;
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+						} else {
+							visnum -= 20;
+						}
+						if (visnum > 20) {
+							initList();
+							offset += 20;
+							url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
+									+ "offset="
+									+ offset
+									+ "&finished=0&task="
+									+ idhash.get(modelstr) + "&p=0";
+							new AsyncHttpTask(this).execute();
+						} else {
+							initList();
+						}
 					}
 				}
-			}
 
-			@Override
-			public HttpUriRequest getRequestMethod() {
-				// TODO Auto-generated method stub
-				return new HttpGet(url);
-			}
-		}.execute();
+				@Override
+				public HttpUriRequest getRequestMethod() {
+					// TODO Auto-generated method stub
+					return new HttpGet(url);
+				}
+			}.execute();
+		}else {
+			
+		}
+		
 	}
 	private void initList() {
 		
@@ -546,7 +633,6 @@ public class OffLineActivity extends Activity implements netEventHandler{
 							locallist.remove(position);
 							templist.remove(position);
 							localadapter.notifyDataSetChanged();
-							//FileHandler.deleteFile(filename);
 							hander.sendEmptyMessage(3);
 						}
 					});
@@ -572,8 +658,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				getResources().getDisplayMetrics());
 	}
 	private void reWritefile(){
-		String tempstr="";
-		//int i=0;
+		dialog = new ProgressDialog(this);
+		dialog.setTitle("请稍等");
+		dialog.setMessage("正在删除");
+		dialog.show();
+		String tempstr="";		
 		if(!locallist.isEmpty()){
 			for(int i=0;i<locallist.size()-1;i++){
 				
@@ -587,11 +676,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 			hander.sendEmptyMessage(1);
 		}
 	}
-	private void rsave(String tempstr){
-		dialog = new ProgressDialog(this);
-		dialog.setTitle("请稍等");
-		dialog.setMessage("正在删除");
-		dialog.show();
+	private void rsave(String tempstr){		
 		try {
 			if (Environment.getExternalStorageState().equals(
 					Environment.MEDIA_MOUNTED)) {
@@ -624,6 +709,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		unregisterReceiver(barcodeReceiver);
 		super.onPause();
 		if (bcr != null) {
 			bcr.release();
@@ -633,9 +719,12 @@ public class OffLineActivity extends Activity implements netEventHandler{
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub		
 		super.onResume();
-
+		intentService.putExtra(KEY_ACTION, "INIT");
+		this.startService(intentService);
+		barcodeReceiver = new BarcodeReceiver(this);
+        barcodeReceiver.registerAction(ACTION_BARCODE_SERVICE_BROADCAST);
 		Thread t = new Thread(new Runnable() {
 
 			@Override
@@ -674,13 +763,62 @@ public class OffLineActivity extends Activity implements netEventHandler{
             uploadlocal.setVisibility(View.GONE);
         }else if(NetUtil.getNetworkState(this) == NetUtil.NETWORN_WIFI){
         	idQuery();
-        	if(!locallist.isEmpty()){
-        		netstate.setText("检测到已连接wifi是否上传？");
-        		uploadlocal.setVisibility(View.VISIBLE);
+        	if(!locallist.isEmpty()){        		
+        		Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						try {
+							Thread.sleep(500);
+							hander.sendEmptyMessage(4);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+        		t.start();
+        		
         	}else {
         		netstate.setText("已连接wifi");
         		uploadlocal.setVisibility(View.GONE);
 			}
         }
+	}
+	class BarcodeReceiver extends BroadcastReceiver {
+
+		public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+		public static final String KEY_BARCODE_STR = "key_barcode_string";
+		Context ct=null;
+	    BroadcastReceiver receiver;
+	    String barcodeString="";
+		public BarcodeReceiver(Context context) {
+			// TODO Auto-generated constructor stub
+			ct = context;
+			receiver=this;
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ACTION_BARCODE_SERVICE_BROADCAST)){
+				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);				
+			}
+			if(barcodeString.length()>0){
+				Message msg = new Message();
+				Bundle bundle = new Bundle();
+				bundle.putString("barc", barcodeString);
+				msg.setData(bundle);
+				OffLineActivity.this.handler.sendMessage(msg);
+			}
+		}
+
+		//注册
+	    public void registerAction(String action){
+	        IntentFilter filter=new IntentFilter();
+	        filter.addAction(action);
+	        ct.registerReceiver(receiver, filter);
+	    }
+	    
 	}
 }
