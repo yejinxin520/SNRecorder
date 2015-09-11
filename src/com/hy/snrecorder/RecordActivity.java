@@ -50,6 +50,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SlidingDrawer;
@@ -68,7 +69,7 @@ public class RecordActivity extends Activity {
 	private Intent intentService = new Intent(
 			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private int offset = 0;
-	private String idMessage, model, tasknumber, url, resultstr;
+	private String idMessage, model, tasknumber, url, resultstr,uploadCode;
 	private Boolean autoUpload, init;
 	private int scanTimes, total_count, uploadnum, visnum, scannedTimes = 0;
 	private int[] barcodelimit;
@@ -84,7 +85,7 @@ public class RecordActivity extends Activity {
 	private JSONObject jsonObject;
 	DecodeUtil decodeMethod = new DecodeUtil();
 	private BarCodeReader bcr = null;
-	private Hashtable<String, String> hashtable;
+	private Hashtable<String, String> hashtable,uploadhash;
 	private SwipeMenuListView scannedListV;
 	private FileHandler offLineService;
 	@SuppressLint("HandlerLeak")
@@ -97,10 +98,15 @@ public class RecordActivity extends Activity {
 				if (scannedTimes < scanTimes) {
 					if (s.length() == barcodelimit[scannedTimes]
 							|| barcodelimit[scannedTimes] == 0) {
-						if (hashtable.containsKey(s) || tmpList.contains(s)) {
+						if (uploadhash.containsKey(s) || tmpList.contains(s)) {
 							state.setText("条码已记录或已扫描，请重新扫描！");
 							state.setTextColor(Color.RED);
-						} else {						
+						} else {		
+							if(uploadCode.equals("")){
+								uploadCode = s;
+							}else {
+								uploadCode = uploadCode+"_"+s;
+							}
 							if (scannedTimes == 0)
 								barcode1.setText(s);
 							else if (scannedTimes == 1)
@@ -127,16 +133,16 @@ public class RecordActivity extends Activity {
 						dialog.setMessage("正在上传");
 						dialog.show();
 						for (int j = 0; j < tmpList.size(); j++) {
-							hashtable.put(tmpList.get(j).toString(), "");
-							if(!scannedList.contains(tmpList.get(j).toString())){					
+							uploadhash.put(tmpList.get(j).toString(), "");
+							/*if(!scannedList.contains(tmpList.get(j).toString())){					
 								dopost(tmpList.get(j).toString());
 							}
 							else {
 								state.setText("条码"+tmpList.get(j).toString()+"已存在！");
 								state.setTextColor(Color.RED);
-							}
-							
+							}*/							
 						}
+						dopost(uploadCode);
 						scannedTimes = 0;
 						tmpList.clear();
 					}else {
@@ -149,12 +155,7 @@ public class RecordActivity extends Activity {
 							public void onClick(DialogInterface arg0, int arg1) {
 								// TODO Auto-generated method stub
 								String filename = model+".txt";
-								for (int j = 0; j < tmpList.size(); j++) {
-									hashtable.put(tmpList.get(j).toString(), "");
-									String barcode = tmpList.get(j).toString();
-									save(filename, barcode);
-								}
-								tmpList.clear();
+								save(filename, uploadCode);
 								scannedTimes = 0;
 							}
 						});
@@ -192,12 +193,13 @@ public class RecordActivity extends Activity {
 		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
 				+ "offset=" + offset + "&finished=0&task=" + idMessage + "&p=0";
 		init = true;
-		
+		uploadCode = "";
 		intentService.putExtra(KEY_ACTION, TONE);
 		this.startService(intentService);
 		
 		scannedListV = (SwipeMenuListView) findViewById(R.id.contentlist);
 		hashtable = new Hashtable<String, String>();
+		uploadhash = new Hashtable<String, String>();
 		scannedList = new ArrayList<String>();
 		tmpList = new ArrayList<String>();
 		httpQuery();
@@ -286,8 +288,8 @@ public class RecordActivity extends Activity {
 								@Override
 								public void onClick(DialogInterface arg0, int arg1) {
 									// TODO Auto-generated method stub
-									httpDelete(id);
-									hashtable.remove(key);
+									httpDelete(id,key);
+									hashtable.remove(key);									
 									scannedList.remove(position);
 									adapter.notifyDataSetChanged();
 								}
@@ -348,7 +350,7 @@ public class RecordActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private void httpDelete(final String id) {
+	private void httpDelete(final String id,final String key) {
 		dialog = new ProgressDialog(this);
 		dialog.setTitle("请稍等");
 		dialog.setMessage("正在删除");
@@ -373,6 +375,11 @@ public class RecordActivity extends Activity {
 					}
 				});
 				t.start();
+				String[] tmpstr=key.split("_");							
+				for(int j=0;j<tmpstr.length;j++)
+				{
+					uploadhash.remove(tmpstr[j]);
+				}
 				uploadnum--;
 				scanned.setText("" + uploadnum);
 			}
@@ -600,17 +607,11 @@ public class RecordActivity extends Activity {
 				dialog.setTitle("请稍等");
 				dialog.setMessage("正在上传");
 				dialog.show();
+				v.setClickable(false);
 				for (int j = 0; j < tmpList.size(); j++) {
-					hashtable.put(tmpList.get(j).toString(), "");
-					if(!scannedList.contains(tmpList.get(j).toString())){					
-						dopost(tmpList.get(j).toString());
-					}
-					else {
-						state.setText("条码"+tmpList.get(j).toString()+"已存在！");
-						state.setTextColor(Color.RED);
-					}
-					
+					uploadhash.put(tmpList.get(j).toString(), "");
 				}
+				dopost(uploadCode);
 				scannedTimes = 0;
 				tmpList.clear();
 			}else {
@@ -624,11 +625,11 @@ public class RecordActivity extends Activity {
 						// TODO Auto-generated method stub
 						String filename = model+".txt";
 						for (int j = 0; j < tmpList.size(); j++) {
-							hashtable.put(tmpList.get(j).toString(), "");
-							String barcode = tmpList.get(j).toString();
-							save(filename, barcode);
+							uploadhash.put(tmpList.get(j).toString(), "");
+							/*String barcode = tmpList.get(j).toString();
+							save(filename, barcode);*/
 						}
-						tmpList.clear();
+						save(filename, uploadCode);
 						scannedTimes = 0;
 					}
 				});
@@ -660,7 +661,7 @@ public class RecordActivity extends Activity {
 				uploadnum ++;
 				scanned.setText("" + uploadnum);
 				scannedList.add(uid);
-				
+				uploadCode = "";
 				
 				Thread t = new Thread(new Runnable() {
 
@@ -669,6 +670,8 @@ public class RecordActivity extends Activity {
 						// TODO Auto-generated method stub
 						try {
 							Thread.sleep(500);
+							Button v =(Button)findViewById(R.id.ulbtn);
+							v.setClickable(true);
 							dialog.dismiss();idQuery();
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
@@ -733,7 +736,7 @@ public class RecordActivity extends Activity {
 		if (scanTimes == 1) {
 			barcode1.setText("");
 		}
-
+		uploadCode= "";
 		scannedTimes = 0;
 		tmpList.clear();
 		state.setText("请重新扫描条码！");
@@ -750,7 +753,6 @@ public class RecordActivity extends Activity {
 				int id = jsonObject.getJSONArray("objects").getJSONObject(i)
 						.getInt("id");
 				hashtable.put(uid, "" + id);
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -768,6 +770,11 @@ public class RecordActivity extends Activity {
 						.getInt("id");
 				hashtable.put(uid, "" + id);
 				scannedList.add(uid);
+				String[] tmpstr=uid.split("_");							
+				for(int j=0;j<tmpstr.length;j++)
+				{
+					uploadhash.put(tmpstr[j], "");
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
