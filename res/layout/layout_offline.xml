@@ -91,7 +91,7 @@
             android:layout_marginLeft="10dp"
             android:text="@string/barcode1"
             android:textColor="#121212"
-            android:textSize="20sp"
+            android:textSize="15sp"
             />
         <TextView 
             android:id="@+id/barcodeoffline"
@@ -102,10 +102,36 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:textColor="#121212"
-            android:textSize="20sp"
+            android:textSize="15sp"
             />
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" 
+        >
+        <TextView 
+            android:id="@+id/barcodeofflinetv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/barcode2"
+            android:textColor="#121212"
+            android:textSize="15sp"
+            android:visibility="gone"
+            />
+        <TextView 
+            android:id="@+id/barcodeoffline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:maxEms="20"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="#121212"
+            android:textSize="15sp"
+            />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
