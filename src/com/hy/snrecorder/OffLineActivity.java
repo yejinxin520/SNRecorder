@@ -18,6 +18,7 @@ import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.hy.util.AsyncHttpTask;
+import com.hy.util.ConfigurationSet;
 import com.hy.util.FileHandler;
 import com.hy.util.HttpHandler;
 import com.hy.util.NetBroadcastReceiver;
@@ -65,16 +66,17 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	private Intent intentService = new Intent(
 			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private Spinner spinner;
-	private TextView barcode,netstate;
+	private TextView barcode,netstate,offbartv,barcode1;
 	private Button uploadlocal;
 	private ProgressDialog dialog;
 	private String filename,barcodestr="",modelstr,url,resultstr;
-	private int localnum=0,offset = 0,total_count,visnum,total;
+	private int localnum=0,offset = 0,total_count,visnum,total,scanTimes,scannedTimes=0;
+	private int[] barcodelimit;
 	private Boolean init;
 	private JSONObject jsonObject;
 	private SwipeMenuListView localListV;
-	private Hashtable<String, String> localhash,idhash,tasknumhash;
-	private List<String> data_list,locallist,scannedList,templist;
+	private Hashtable<String, String> localhash,idhash,tasknumhash,savehash,uploadedhash;
+	private List<String> data_list,locallist,scannedList,templist,scantemp;
 	private ArrayAdapter<String> arr_adapter,localadapter;
 	private FileHandler offLineService;
 	DecodeUtil decodeMethod = new DecodeUtil();
@@ -84,18 +86,33 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			Bundle bundle = msg.getData();
-			String s = bundle.getString("barc");			
-			if(localhash.containsKey(s)||scannedList.contains(s)){
-				//if(localhash.get(s).equals(modelstr)){
-					barcode.setText("该条码已离线或已上传！");
-				//}
-				//else {
-					//barcode.setText("该条码已离线到机型"+localhash.get(s));
-				//}
+			String s = bundle.getString("barc");	
+			if(scannedTimes < scanTimes){
+				if (s.length() == barcodelimit[scannedTimes]
+						|| barcodelimit[scannedTimes] == 0) {
+					if(savehash.containsKey(s)||scantemp.contains(s)
+							||uploadedhash.containsKey(s)){
+						netstate.setText("该条码已上传或已离线！");						
+					}else {
+						if (scannedTimes == 0){
+							barcode.setText(s);
+							barcodestr = s;
+							netstate.setText("条码1扫描完成");
+						}
+						else if (scannedTimes == 1){
+							barcode1.setText(s);
+							barcodestr = barcodestr+"_"+s;
+							netstate.setText("条码2扫描完成");
+						}						
+						scannedTimes++;
+						scantemp.add(s);
+						}
+				}else {
+					netstate.setText("该条码长度不匹配！");					
+				}
 			}else {
-				barcode.setText(s);
-				barcodestr = s;
-			}			
+				netstate.setText("扫描已完成，请上传或者清除！");
+			}						
 		};
 	};
 
@@ -107,8 +124,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		setContentView(R.layout.layout_offline);
 		idhash = new Hashtable<String, String>();
 		tasknumhash = new Hashtable<String, String>();
+		savehash = new Hashtable<String, String>();
+		uploadedhash = new Hashtable<String, String>();
 		data_list = new ArrayList<String>();
 		scannedList = new ArrayList<String>();
+		scantemp = new ArrayList<String>();
 		//idQuery();
 		NetBroadcastReceiver.mListeners.add(this);
 		offLineService = new FileHandler(this);
@@ -117,7 +137,16 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		netstate = (TextView)findViewById(R.id.netstatetv);
 		uploadlocal = (Button)findViewById(R.id.uploadlocal);
 		localListV = (SwipeMenuListView)findViewById(R.id.locallist);
-		
+		offbartv = (TextView)findViewById(R.id.barcodeofflinetv1);
+		barcode1 = (TextView)findViewById(R.id.barcodeoffline1);
+		scanTimes = ConfigurationSet.getSanTimes();
+		barcodelimit = new int[3];
+		barcodelimit[0] = ConfigurationSet.getBarcodeLimit1();
+		barcodelimit[1] = ConfigurationSet.getBarcodeLimit2();
+		if (scanTimes > 1) {
+			offbartv.setVisibility(View.VISIBLE);
+			scanTimes =2;
+		}
         data_list.add("For TEST");
         data_list.add("V68");        
         data_list.add("PE900S");
@@ -231,18 +260,25 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		
 	}
 	public void doSave(View v) {
-		if(barcodestr!=""){
-			if(!scannedList.contains(barcodestr)){
+		if (scannedTimes == scanTimes) {
+			if(barcodestr!=""){
 				save(filename,barcodestr);	
+				scannedTimes = 0;
+				scantemp.clear();
 			}else {
-				barcode.setText("条码已上传！");
+				netstate.setText("未扫描条码！");
 			}
 		}else {
-			barcode.setText("条码没扫描！");
-		}
+			netstate.setText("扫描未完成！");
+		}		
 	}
 	public void doClear(View v) {
-		barcode.setText("");		
+		barcode.setText("");
+		barcode1.setText("");
+		barcodestr = "";
+		netstate.setText("请重新扫描！");
+		scannedTimes = 0;
+		scantemp.clear();
 	}
 	public void doUpload(View v) {
 		
@@ -302,8 +338,9 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				scannedList.add(uid);
 				locallist.remove(uid);
 				localnum--;
-				total++;System.out.println(total);
-				localhash.remove(uid);
+				total++;
+				localhash.remove(uid);				
+				
 				Thread t = new Thread(new Runnable() {
 
 					@Override
@@ -369,11 +406,17 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				localnum++;				
 				templist.add(barcodestr);
 				localhash.put(barcodestr, modelstr);
+				String[] tmpstr=barcodestr.split("_");							
+				for(int j=0;j<tmpstr.length;j++)
+				{
+					savehash.put(tmpstr[j],modelstr);
+				}
 				if(NetUtil.getNetworkState(this)!=NetUtil.NETWORN_NONE){
 					hander.sendEmptyMessage(4);
 				}
 				
 				barcode.setText("");
+				barcode1.setText("");
 				this.barcodestr="";
 				Thread t = new Thread(new Runnable() {
 
@@ -418,6 +461,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
             case 2:
             	init = true;				
 				scannedList.clear();
+				uploadedhash.clear();
 				httpQuery();
 				break;
 			case 3:
@@ -451,6 +495,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 					locallist.add(filestr[i]);System.out.println(filestr[i]);
 					templist.add(filestr[i]);
 					localhash.put(filestr[i], modelstr);
+					String[] tmpstr=filestr[i].split("_");							
+					for(int j=0;j<tmpstr.length;j++)
+					{
+						savehash.put(tmpstr[j],modelstr);
+					}
 				}
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
@@ -589,7 +638,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				uid = jsonObject.getJSONArray("objects").getJSONObject(i)
 						.getString("UID");
 				scannedList.add(uid);
-
+				String[] tmpstr=uid.split("_");							
+				for(int j=0;j<tmpstr.length;j++)
+				{
+					uploadedhash.put(tmpstr[j], "");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -630,6 +683,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 						public void onClick(DialogInterface arg0, int arg1) {
 							// TODO Auto-generated method stub
 							localhash.remove(locallist.get(position));
+							String[] tmpstr=locallist.get(position).split("_");							
+							for(int j=0;j<tmpstr.length;j++)
+							{
+								savehash.remove(tmpstr[j]);
+							}
 							locallist.remove(position);
 							templist.remove(position);
 							localadapter.notifyDataSetChanged();
