@@ -74,6 +74,7 @@ public class SettingActivity extends Activity {
 			break;
 		case 2:
 			radioButton2.setChecked(true);
+			np1.setValue(barcode1Limit);
 			inflateview(0);
 			hasadd = 1;
 			np2 = (NumberPicker) this.findViewById(0);
