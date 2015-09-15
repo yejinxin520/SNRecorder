@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="2dp"
         android:background="@drawable/selector1"
         android:orientation="vertical"
         android:onClick="doConfirm"
