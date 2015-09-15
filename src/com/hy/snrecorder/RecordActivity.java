@@ -337,9 +337,7 @@ public class RecordActivity extends Activity {
 		System.out.println(event.getKeyCode());
 		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			if(bcr!=null){
-				doScan(findViewById(R.id.scanbtn));
-			}
+			doScan(findViewById(R.id.scanbtn));
 			
 			return true;
 		}
