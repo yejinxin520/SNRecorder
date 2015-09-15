@@ -112,9 +112,15 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				}
 			}else {
 				netstate.setText("扫描已完成，请上传或者清除！");
-			}						
+			}
+			if(scannedTimes == scanTimes && autoupload){
+				save(filename,barcodestr);	
+				scannedTimes = 0;
+				scantemp.clear();
+			}
 		};
 	};
+	private Boolean autoupload;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +145,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		localListV = (SwipeMenuListView)findViewById(R.id.locallist);
 		offbartv = (TextView)findViewById(R.id.barcodeofflinetv1);
 		barcode1 = (TextView)findViewById(R.id.barcodeoffline1);
+		autoupload = ConfigurationSet.getAutoUpload();
 		scanTimes = ConfigurationSet.getSanTimes();
 		barcodelimit = new int[3];
 		barcodelimit[0] = ConfigurationSet.getBarcodeLimit1();
@@ -209,9 +216,8 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		System.out.println(event.getKeyCode());
 		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			if(bcr!=null){
-				doScan(findViewById(R.id.qscanbtn));
-			}
+			doScan(findViewById(R.id.qscanbtn));
+
 			return true;
 		}
 		if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
