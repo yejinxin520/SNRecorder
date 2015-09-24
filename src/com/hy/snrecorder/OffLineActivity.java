@@ -66,7 +66,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	private Intent intentService = new Intent(
 			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private Spinner spinner;
-	private TextView barcode,netstate,offbartv,barcode1;
+	private TextView barcode,netstate,offbartv,barcode1,saved;
 	private Button uploadlocal;
 	private ProgressDialog dialog;
 	private String filename,barcodestr="",modelstr,url,resultstr;
@@ -143,6 +143,8 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		netstate = (TextView)findViewById(R.id.netstatetv);
 		uploadlocal = (Button)findViewById(R.id.uploadlocal);
 		localListV = (SwipeMenuListView)findViewById(R.id.locallist);
+		saved = (TextView)findViewById(R.id.savedstr);
+		saved.setText("0");
 		offbartv = (TextView)findViewById(R.id.barcodeofflinetv1);
 		barcode1 = (TextView)findViewById(R.id.barcodeoffline1);
 		autoupload = ConfigurationSet.getAutoUpload();
@@ -191,6 +193,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				modelstr = data_list.get(position);
 				read(filename);
 				localadapter.notifyDataSetChanged();
+				saved.setText(localnum+"");
 				onNetChange();
 				//hander.sendEmptyMessage(2);
 			}
@@ -420,7 +423,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				if(NetUtil.getNetworkState(this)!=NetUtil.NETWORN_NONE){
 					hander.sendEmptyMessage(4);
 				}
-				
+				saved.setText("本地已保存");
 				barcode.setText("");
 				barcode1.setText("");
 				this.barcodestr="";
@@ -456,7 +459,8 @@ public class OffLineActivity extends Activity implements netEventHandler{
             switch(msg.what){
             case 0:
             	localadapter.notifyDataSetChanged(); //发送消息通知ListView更新
-                localListV.setSelection(localnum);
+            	saved.setText(localnum+"");
+                localListV.setSelection(localnum-1);
                 break;
             case 1:
             	
@@ -496,7 +500,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 			try {
 				String temp = offLineService.readFile(filename);
 				String [] filestr = temp.split(",");
-				localnum = filestr.length-1;
+				localnum = filestr.length;
 				for(int i=0;i<filestr.length;i++){
 					locallist.add(filestr[i]);System.out.println(filestr[i]);
 					templist.add(filestr[i]);
@@ -512,6 +516,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				e.printStackTrace();
 			}
 		}else {
+			localnum = 0;
 			System.out.println("文件不存在");
 		}
 	}
@@ -695,8 +700,10 @@ public class OffLineActivity extends Activity implements netEventHandler{
 								savehash.remove(tmpstr[j]);
 							}
 							locallist.remove(position);
+							localnum--;
 							templist.remove(position);
 							localadapter.notifyDataSetChanged();
+							saved.setText(localnum+"");
 							hander.sendEmptyMessage(3);
 						}
 					});

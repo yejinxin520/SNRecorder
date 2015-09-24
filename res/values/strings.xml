@@ -21,6 +21,7 @@
     <string name="savebtn">保存</string>
     <string name="uploadbtn">上传</string>
     <string name="scanned">已上传的</string>
+    <string name="saved">已保存：</string>
     <string name="total">总数</string>
     <string name="barcode1">条码1:</string>
     <string name="barcode2">条码2:</string>
@@ -32,7 +33,7 @@
     <string name="state">请扫描条码</string>
     <string name="querystate">请输入或扫描UID</string>
     <string name="load">loading</string>
-    <string name="localtxt">本地已保存</string>
+    <string name="localtxt">本地已保存:</string>
     <string name="result">查询结果</string>
     <string name="repairt">维修记录</string>
     <string name="outt">出货记录</string>
