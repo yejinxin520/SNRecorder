@@ -41,7 +41,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -69,8 +68,8 @@ public class RecordActivity extends Activity {
 	private Intent intentService = new Intent(
 			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private int offset = 0;
-	private String idMessage, model, tasknumber, url, resultstr,uploadCode;
-	private Boolean autoUpload, init,queryinit;
+	private String idMessage, model, tasknumber, url, resultstr, uploadCode;
+	private Boolean autoUpload, init, queryinit;
 	private int scanTimes, total_count, uploadnum, visnum, scannedTimes = 0;
 	private int[] barcodelimit;
 	private TextView modeltv, total, scanned, barcode1, barcode2, barcode3,
@@ -85,28 +84,27 @@ public class RecordActivity extends Activity {
 	private JSONObject jsonObject;
 	DecodeUtil decodeMethod = new DecodeUtil();
 	private BarCodeReader bcr = null;
-	private Hashtable<String, String> hashtable,uploadhash;
+	private Hashtable<String, String> hashtable, uploadhash;
 	private SwipeMenuListView scannedListV;
-	private FileHandler offLineService;
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			Bundle bundle = msg.getData();
 			String s = bundle.getString("barc");
-			if(uploadnum < Integer.parseInt(tasknumber)){
+			if (uploadnum < Integer.parseInt(tasknumber)) {
 				if (scannedTimes < scanTimes) {
 					if (s.length() == barcodelimit[scannedTimes]
 							|| barcodelimit[scannedTimes] == 0) {
 						if (uploadhash.containsKey(s) || tmpList.contains(s)) {
 							state.setText("条码已记录或已扫描，请重新扫描！");
 							state.setTextColor(Color.RED);
-						} else {		
-							if(uploadCode.equals("")){
+						} else {
+							if (uploadCode.equals("")) {
 								uploadCode = s;
-							}else {
-								uploadCode = uploadCode+"_"+s;
-							}System.out.println(uploadCode);
+							} else {
+								uploadCode = uploadCode + "_" + s;
+							}
 							if (scannedTimes == 0)
 								barcode1.setText(s);
 							else if (scannedTimes == 1)
@@ -127,32 +125,23 @@ public class RecordActivity extends Activity {
 					state.setTextColor(Color.RED);
 				}
 				if (scannedTimes == scanTimes && autoUpload) {
-					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
+					if (NetUtil.getNetworkState(RecordActivity.this) != NetUtil.NETWORN_NONE) {
 						for (int j = 0; j < tmpList.size(); j++) {
 							uploadhash.put(tmpList.get(j).toString(), "");
-							/*if(!scannedList.contains(tmpList.get(j).toString())){					
-								dopost(tmpList.get(j).toString());
-							}
-							else {
-								state.setText("条码"+tmpList.get(j).toString()+"已存在！");
-								state.setTextColor(Color.RED);
-							}*/							
 						}
 						dopost(uploadCode);
 						scannedTimes = 0;
 						tmpList.clear();
-					}else {
+					} else {
 						Builder msgBox = new Builder(RecordActivity.this);
 						msgBox.setTitle("提示");
-						msgBox.setMessage("没有可用网络，是否离线到本地");
+						msgBox.setMessage("没有可用网络，请使用离线方式");
 						msgBox.setPositiveButton("确定", new OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface arg0, int arg1) {
 								// TODO Auto-generated method stub
-								String filename = model+".txt";
-								save(filename, uploadCode);
-								scannedTimes = 0;
+								doClear(findViewById(R.id.clear));
 							}
 						});
 						msgBox.setNegativeButton("取消", new OnClickListener() {
@@ -165,13 +154,13 @@ public class RecordActivity extends Activity {
 						});
 						msgBox.create().show();
 					}
-					
+
 				}
-			}else {
+			} else {
 				state.setText("任务已经完成了！");
 				state.setTextColor(Color.RED);
 			}
-			
+
 		};
 	};
 
@@ -181,7 +170,7 @@ public class RecordActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.layout_record);
-		offLineService = new FileHandler(this);
+		new FileHandler(this);
 		Intent intent = getIntent();
 		idMessage = intent.getStringExtra("idmessage");
 		model = intent.getStringExtra("modelmessage");
@@ -189,7 +178,7 @@ public class RecordActivity extends Activity {
 		uploadCode = "";
 		intentService.putExtra(KEY_ACTION, TONE);
 		this.startService(intentService);
-		
+
 		scannedListV = (SwipeMenuListView) findViewById(R.id.contentlist);
 		hashtable = new Hashtable<String, String>();
 		uploadhash = new Hashtable<String, String>();
@@ -270,54 +259,58 @@ public class RecordActivity extends Activity {
 				switch (index) {
 				case 0:
 					final String key = scannedList.get(position);
-					final String id = hashtable.get(key);					
-					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
-						if(id!=null){
+					final String id = hashtable.get(key);
+					if (NetUtil.getNetworkState(RecordActivity.this) != NetUtil.NETWORN_NONE) {
+						if (id != null) {
 							System.out.println(id);
 							Builder msgBox = new Builder(RecordActivity.this);
 							msgBox.setTitle("提示");
 							msgBox.setMessage("您确定要删除这条记录吗");
-							msgBox.setPositiveButton("确定", new OnClickListener() {
+							msgBox.setPositiveButton("确定",
+									new OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									// TODO Auto-generated method stub
-									httpDelete(id,key);
-									hashtable.remove(key);									
-									scannedList.remove(position);
-									adapter.notifyDataSetChanged();
-								}
-							});
-							msgBox.setNegativeButton("取消", new OnClickListener() {
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											// TODO Auto-generated method stub
+											httpDelete(id, key);
+											hashtable.remove(key);
+											scannedList.remove(position);
+											adapter.notifyDataSetChanged();
+										}
+									});
+							msgBox.setNegativeButton("取消",
+									new OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									// TODO Auto-generated method stub
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											// TODO Auto-generated method stub
 
-								}
-							});
+										}
+									});
 							msgBox.create().show();
-						}
-						else {
+						} else {
 							queryinit = false;
 							httpQuery();
-							Builder msgBox = new Builder(
-									RecordActivity.this);
+							Builder msgBox = new Builder(RecordActivity.this);
 							msgBox.setTitle("提示");
 							msgBox.setMessage("数据异常，请重试！");
-							msgBox.setPositiveButton("确定", new OnClickListener() {
+							msgBox.setPositiveButton("确定",
+									new OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									// TODO Auto-generated method stub
-									dialog.dismiss();
-									adapter.notifyDataSetChanged();
-								}
-							});
+										@Override
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
+											adapter.notifyDataSetChanged();
+										}
+									});
 							msgBox.create().show();
 						}
-					}else {
-						Toast.makeText(getApplicationContext(), "无网络连接！", 
+					} else {
+						Toast.makeText(getApplicationContext(), "无网络连接！",
 								Toast.LENGTH_SHORT).show();
 					}
 					break;
@@ -328,23 +321,24 @@ public class RecordActivity extends Activity {
 			}
 		});
 	}
-	
+
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		System.out.println(event.getKeyCode());
 		if (((keyCode == 135) || (keyCode == 136) || (keyCode == 134) || (keyCode == 137))
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
 			doScan(findViewById(R.id.scanbtn));
-			
+
 			return true;
 		}
-		if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
+		if (keyCode == KeyEvent.KEYCODE_ENTER
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
 			doUpload(findViewById(R.id.ulbtn));
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private void httpDelete(final String id,final String key) {
+	private void httpDelete(final String id, final String key) {
 		dialog = new ProgressDialog(this);
 		dialog.setTitle("请稍等");
 		dialog.setMessage("正在删除");
@@ -369,9 +363,8 @@ public class RecordActivity extends Activity {
 					}
 				});
 				t.start();
-				String[] tmpstr=key.split("_");							
-				for(int j=0;j<tmpstr.length;j++)
-				{
+				String[] tmpstr = key.split("_");
+				for (int j = 0; j < tmpstr.length; j++) {
 					uploadhash.remove(tmpstr[j]);
 				}
 				uploadnum--;
@@ -380,19 +373,18 @@ public class RecordActivity extends Activity {
 
 			@Override
 			public HttpUriRequest getRequestMethod() {
-				// TODO Auto-generated method stub				
+				// TODO Auto-generated method stub
 				String urlp = "http://192.168.0.201/mary/sellrec/api/collect/"
 						+ id
 						+ "/?format=json&username=tomsu&api_key=123456&id="
 						+ id;
-				System.out.println(urlp);
 				return new HttpDelete(urlp);
 			}
 		}.execute();
 	}
 
 	private void httpQuery() {
-		if(queryinit){
+		if (queryinit) {
 			dialog = new ProgressDialog(this);
 			dialog.setTitle("请稍等");
 			dialog.setMessage("正在查询");
@@ -401,10 +393,7 @@ public class RecordActivity extends Activity {
 		init = true;
 		offset = 0;
 		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
-				+ "offset="
-				+ offset
-				+ "&finished=0&task="
-				+ idMessage + "&p=0";
+				+ "offset=" + offset + "&finished=0&task=" + idMessage + "&p=0";
 		hashtable.clear();
 		new HttpHandler() {
 
@@ -412,7 +401,7 @@ public class RecordActivity extends Activity {
 			public void onResponse(String result) {
 				// TODO Auto-generated method stub
 				if (result == "") {
-					if(queryinit){
+					if (queryinit) {
 						AlertDialog.Builder msgBox = new Builder(
 								RecordActivity.this);
 						msgBox.setTitle("提示");
@@ -428,7 +417,6 @@ public class RecordActivity extends Activity {
 						msgBox.create().show();
 					}
 				} else {
-					System.out.println(result.toString());
 					resultstr = result.toString();
 					Thread t = new Thread(new Runnable() {
 
@@ -476,9 +464,9 @@ public class RecordActivity extends Activity {
 					} else {
 						initList();
 					}
-					if(queryinit){
+					if (queryinit) {
 						scanned.setText("" + total_count);
-						
+
 					}
 				}
 			}
@@ -492,7 +480,7 @@ public class RecordActivity extends Activity {
 	}
 
 	public void doScan(View v) {
-		if(bcr==null){
+		if (bcr == null) {
 			intentService.putExtra(KEY_ACTION, "UP");
 			this.startService(intentService);
 			try {
@@ -502,18 +490,16 @@ public class RecordActivity extends Activity {
 			}
 			intentService.putExtra(KEY_ACTION, "DOWN");
 			this.startService(intentService);
-		}
-		else {
+		} else {
 			decodeMethod.doDecode();
 		}
-		
 
 	}
 
 	public void doUpload(View v) {
 		if (scannedTimes == scanTimes) {
-			if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
-				
+			if (NetUtil.getNetworkState(RecordActivity.this) != NetUtil.NETWORN_NONE) {
+
 				v.setClickable(false);
 				for (int j = 0; j < tmpList.size(); j++) {
 					uploadhash.put(tmpList.get(j).toString(), "");
@@ -521,23 +507,16 @@ public class RecordActivity extends Activity {
 				dopost(uploadCode);
 				scannedTimes = 0;
 				tmpList.clear();
-			}else {
+			} else {
 				Builder msgBox = new Builder(RecordActivity.this);
 				msgBox.setTitle("提示");
-				msgBox.setMessage("没有可用网络，是否离线到本地");
+				msgBox.setMessage("没有可用网络，请使用离线方式");
 				msgBox.setPositiveButton("确定", new OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
 						// TODO Auto-generated method stub
-						String filename = model+".txt";
-						for (int j = 0; j < tmpList.size(); j++) {
-							uploadhash.put(tmpList.get(j).toString(), "");
-							/*String barcode = tmpList.get(j).toString();
-							save(filename, barcode);*/
-						}
-						save(filename, uploadCode);
-						scannedTimes = 0;
+						doClear(findViewById(R.id.clear));
 					}
 				});
 				msgBox.setNegativeButton("取消", new OnClickListener() {
@@ -550,7 +529,7 @@ public class RecordActivity extends Activity {
 				});
 				msgBox.create().show();
 			}
-						
+
 		} else {
 			state.setText("扫描未完成！");
 			state.setTextColor(Color.RED);
@@ -558,14 +537,13 @@ public class RecordActivity extends Activity {
 	}
 
 	private void dopost(final String uid) {
-		final String urlpath = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456";		
+		final String urlpath = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456";
 		new HttpHandler() {
 
 			@Override
 			public void onResponse(String result) {
 				// TODO Auto-generated method stub
-				System.out.println("post:" + result.toString());
-				uploadnum ++;
+				uploadnum++;
 				scanned.setText("" + uploadnum);
 				scannedList.add(uid);
 				uploadCode = "";
@@ -576,7 +554,7 @@ public class RecordActivity extends Activity {
 						// TODO Auto-generated method stub
 						try {
 							Thread.sleep(500);
-							Button v =(Button)findViewById(R.id.ulbtn);
+							Button v = (Button) findViewById(R.id.ulbtn);
 							v.setClickable(true);
 							queryinit = false;
 							httpQuery();
@@ -591,11 +569,10 @@ public class RecordActivity extends Activity {
 				scannedListV.setSelection(uploadnum - 1);
 				if (scanTimes == 1)
 					barcode1.setText("");
-				else if (scanTimes == 2){
+				else if (scanTimes == 2) {
 					barcode1.setText("");
 					barcode2.setText("");
-				}
-				else{
+				} else {
 					barcode1.setText("");
 					barcode2.setText("");
 					barcode3.setText("");
@@ -610,9 +587,9 @@ public class RecordActivity extends Activity {
 				// TODO Auto-generated method stub
 				HttpPost httpPost = new HttpPost(urlpath);
 				try {
-					String json = "";										
-					JSONObject jsonObject = new JSONObject();					
-                    jsonObject.accumulate("task", "/mary/sellrec/api/task/"
+					String json = "";
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.accumulate("task", "/mary/sellrec/api/task/"
 							+ idMessage + "/");
 					jsonObject.accumulate("UID", uid);
 					json = jsonObject.toString();
@@ -643,7 +620,7 @@ public class RecordActivity extends Activity {
 		if (scanTimes == 1) {
 			barcode1.setText("");
 		}
-		uploadCode= "";
+		uploadCode = "";
 		scannedTimes = 0;
 		tmpList.clear();
 		state.setText("请重新扫描条码！");
@@ -660,11 +637,10 @@ public class RecordActivity extends Activity {
 				int id = jsonObject.getJSONArray("objects").getJSONObject(i)
 						.getInt("id");
 				hashtable.put(uid, "" + id);
-				if(queryinit){
+				if (queryinit) {
 					scannedList.add(uid);
-					String[] tmpstr=uid.split("_");							
-					for(int j=0;j<tmpstr.length;j++)
-					{
+					String[] tmpstr = uid.split("_");
+					for (int j = 0; j < tmpstr.length; j++) {
 						uploadhash.put(tmpstr[j], "");
 					}
 				}
@@ -694,11 +670,11 @@ public class RecordActivity extends Activity {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		super.onResume();	
+		super.onResume();
 		intentService.putExtra(KEY_ACTION, "INIT");
 		this.startService(intentService);
 		barcodeReceiver = new BarcodeReceiver(this);
-        barcodeReceiver.registerAction(ACTION_BARCODE_SERVICE_BROADCAST);
+		barcodeReceiver.registerAction(ACTION_BARCODE_SERVICE_BROADCAST);
 		initbcr();
 	}
 
@@ -719,7 +695,7 @@ public class RecordActivity extends Activity {
 					else
 						bcr = BarCodeReader.open(); // Android 2.3
 
-					decodeMethod.decodeinit(bcr,getApplicationContext());
+					decodeMethod.decodeinit(bcr, getApplicationContext());
 					if (bcr == null) {
 						Log.d("tag", "open failed");
 						return;
@@ -733,65 +709,27 @@ public class RecordActivity extends Activity {
 		});
 		t.start();
 	}
-	
-	private void save(String filename,String barcode) {
-		dialog = new ProgressDialog(this);
-		dialog.setTitle("请稍等");
-		dialog.setMessage("正在离线保存");
-		dialog.show();
-		try {
-			offLineService.save(filename, barcode);
-			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED)) {
-				offLineService.saveToSDCard(filename, barcode,true);
-				state.setText("保存成功");
-				state.setTextColor(Color.BLACK);
-				Thread t = new Thread(new Runnable() {
 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						try {
-							Thread.sleep(500);
-							dialog.dismiss();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				});
-				t.start();
-			} else {
-				state.setText("sd卡不存在或被写入保护");
-				state.setTextColor(Color.RED);
-			}
-		} catch (Exception e) {
-			dialog.dismiss();
-			e.printStackTrace();
-			state.setText("离线保存失败");
-			state.setTextColor(Color.RED);
-			System.out.println("保存失败");
-		}
-	}
 	class BarcodeReceiver extends BroadcastReceiver {
 
 		public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
 		public static final String KEY_BARCODE_STR = "key_barcode_string";
-		Context ct=null;
-	    BroadcastReceiver receiver;
-	    String barcodeString="";
+		Context ct = null;
+		BroadcastReceiver receiver;
+		String barcodeString = "";
+
 		public BarcodeReceiver(Context context) {
 			// TODO Auto-generated constructor stub
 			ct = context;
-			receiver=this;
+			receiver = this;
 		}
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(ACTION_BARCODE_SERVICE_BROADCAST)){
-				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);	
+			if (intent.getAction().equals(ACTION_BARCODE_SERVICE_BROADCAST)) {
+				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);
 			}
-			if(barcodeString.length()>0){
+			if (barcodeString.length() > 0) {
 				Message msg = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString("barc", barcodeString);
@@ -800,12 +738,12 @@ public class RecordActivity extends Activity {
 			}
 		}
 
-		//注册
-	    public void registerAction(String action){
-	        IntentFilter filter=new IntentFilter();
-	        filter.addAction(action);
-	        ct.registerReceiver(receiver, filter);
-	    }
-	    
+		// 注册
+		public void registerAction(String action) {
+			IntentFilter filter = new IntentFilter();
+			filter.addAction(action);
+			ct.registerReceiver(receiver, filter);
+		}
+
 	}
 }
