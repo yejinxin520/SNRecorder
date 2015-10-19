@@ -70,7 +70,7 @@ public class RecordActivity extends Activity {
 			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private int offset = 0;
 	private String idMessage, model, tasknumber, url, resultstr,uploadCode;
-	private Boolean autoUpload, init;
+	private Boolean autoUpload, init,queryinit;
 	private int scanTimes, total_count, uploadnum, visnum, scannedTimes = 0;
 	private int[] barcodelimit;
 	private TextView modeltv, total, scanned, barcode1, barcode2, barcode3,
@@ -106,7 +106,7 @@ public class RecordActivity extends Activity {
 								uploadCode = s;
 							}else {
 								uploadCode = uploadCode+"_"+s;
-							}
+							}System.out.println(uploadCode);
 							if (scannedTimes == 0)
 								barcode1.setText(s);
 							else if (scannedTimes == 1)
@@ -128,10 +128,6 @@ public class RecordActivity extends Activity {
 				}
 				if (scannedTimes == scanTimes && autoUpload) {
 					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
-						dialog = new ProgressDialog(RecordActivity.this);
-						dialog.setTitle("请稍等");
-						dialog.setMessage("正在上传");
-						dialog.show();
 						for (int j = 0; j < tmpList.size(); j++) {
 							uploadhash.put(tmpList.get(j).toString(), "");
 							/*if(!scannedList.contains(tmpList.get(j).toString())){					
@@ -190,9 +186,6 @@ public class RecordActivity extends Activity {
 		idMessage = intent.getStringExtra("idmessage");
 		model = intent.getStringExtra("modelmessage");
 		tasknumber = intent.getStringExtra("numbermessage");
-		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
-				+ "offset=" + offset + "&finished=0&task=" + idMessage + "&p=0";
-		init = true;
 		uploadCode = "";
 		intentService.putExtra(KEY_ACTION, TONE);
 		this.startService(intentService);
@@ -202,6 +195,7 @@ public class RecordActivity extends Activity {
 		uploadhash = new Hashtable<String, String>();
 		scannedList = new ArrayList<String>();
 		tmpList = new ArrayList<String>();
+		queryinit = true;
 		httpQuery();
 
 		adapter = new ArrayAdapter<String>(RecordActivity.this,
@@ -276,10 +270,10 @@ public class RecordActivity extends Activity {
 				switch (index) {
 				case 0:
 					final String key = scannedList.get(position);
-					final String id = hashtable.get(key);
-					System.out.println(id);
+					final String id = hashtable.get(key);					
 					if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
 						if(id!=null){
+							System.out.println(id);
 							Builder msgBox = new Builder(RecordActivity.this);
 							msgBox.setTitle("提示");
 							msgBox.setMessage("您确定要删除这条记录吗");
@@ -305,7 +299,8 @@ public class RecordActivity extends Activity {
 							msgBox.create().show();
 						}
 						else {
-							idQuery();
+							queryinit = false;
+							httpQuery();
 							Builder msgBox = new Builder(
 									RecordActivity.this);
 							msgBox.setTitle("提示");
@@ -316,6 +311,7 @@ public class RecordActivity extends Activity {
 								public void onClick(DialogInterface arg0, int arg1) {
 									// TODO Auto-generated method stub
 									dialog.dismiss();
+									adapter.notifyDataSetChanged();
 								}
 							});
 							msgBox.create().show();
@@ -395,14 +391,20 @@ public class RecordActivity extends Activity {
 		}.execute();
 	}
 
-	private void idQuery() {
+	private void httpQuery() {
+		if(queryinit){
+			dialog = new ProgressDialog(this);
+			dialog.setTitle("请稍等");
+			dialog.setMessage("正在查询");
+			dialog.show();
+		}
+		init = true;
 		offset = 0;
 		url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
 				+ "offset="
 				+ offset
 				+ "&finished=0&task="
 				+ idMessage + "&p=0";
-		init = true;
 		hashtable.clear();
 		new HttpHandler() {
 
@@ -410,90 +412,21 @@ public class RecordActivity extends Activity {
 			public void onResponse(String result) {
 				// TODO Auto-generated method stub
 				if (result == "") {
-					System.out.println("网络错误");
-				} else {					
-					resultstr = result.toString();
-					System.out.println(result);
-					Thread t = new Thread(new Runnable() {
+					if(queryinit){
+						AlertDialog.Builder msgBox = new Builder(
+								RecordActivity.this);
+						msgBox.setTitle("提示");
+						msgBox.setMessage("网络错误，连接失败");
+						msgBox.setPositiveButton("确定", new OnClickListener() {
 
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO Auto-generated method stub
+								dialog.dismiss();
 							}
-						}
-					});
-					t.start();
-					jsonObject = new JSONObject();
-					try {
-						jsonObject = new JSONObject(resultstr);
-					} catch (Exception e) {
-						e.printStackTrace();
+						});
+						msgBox.create().show();
 					}
-					if (init) {
-						try {
-							total_count = jsonObject.getJSONObject("meta")
-									.getInt("total_count");
-							init = false;
-							visnum = total_count;
-							uploadnum = total_count;
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-					} else {
-						visnum -= 20;
-					}
-					if (visnum > 20) {
-						inithash();
-						offset += 20;
-						url = "http://192.168.0.201/mary/sellrec/api/collect/?format=json&username=tomsu&api_key=123456&"
-								+ "offset="
-								+ offset
-								+ "&finished=0&task="
-								+ idMessage + "&p=0";
-						new AsyncHttpTask(this).execute();
-					} else {
-						inithash();
-					}
-				}
-			}
-
-			@Override
-			public HttpUriRequest getRequestMethod() {
-				// TODO Auto-generated method stub				
-				return new HttpGet(url);
-			}
-		}.execute();
-	}
-	
-	private void httpQuery() {
-		dialog = new ProgressDialog(this);
-		dialog.setTitle("请稍等");
-		dialog.setMessage("正在查询");
-		dialog.show();
-		new HttpHandler() {
-
-			@Override
-			public void onResponse(String result) {
-				// TODO Auto-generated method stub
-				if (result == "") {
-					AlertDialog.Builder msgBox = new Builder(
-							RecordActivity.this);
-					msgBox.setTitle("提示");
-					msgBox.setMessage("网络错误，连接失败");
-					msgBox.setPositiveButton("确定", new OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							// TODO Auto-generated method stub
-							dialog.dismiss();
-						}
-					});
-					msgBox.create().show();
 				} else {
 					System.out.println(result.toString());
 					resultstr = result.toString();
@@ -543,8 +476,10 @@ public class RecordActivity extends Activity {
 					} else {
 						initList();
 					}
-					scanned.setText("" + total_count);
-
+					if(queryinit){
+						scanned.setText("" + total_count);
+						
+					}
 				}
 			}
 
@@ -570,29 +505,6 @@ public class RecordActivity extends Activity {
 		}
 		else {
 			decodeMethod.doDecode();
-			Thread t = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						while (decodeMethod.getData().length() == 0) {
-							Thread.sleep(500);
-						}
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					String s = decodeMethod.getData().trim();
-					Message msg = new Message();
-					Bundle bundle = new Bundle();
-					bundle.putString("barc", s);
-					msg.setData(bundle);
-					RecordActivity.this.handler.sendMessage(msg);
-
-				}
-			});
-			t.start();
 		}
 		
 
@@ -601,10 +513,7 @@ public class RecordActivity extends Activity {
 	public void doUpload(View v) {
 		if (scannedTimes == scanTimes) {
 			if(NetUtil.getNetworkState(RecordActivity.this)!=NetUtil.NETWORN_NONE){
-				dialog = new ProgressDialog(RecordActivity.this);
-				dialog.setTitle("请稍等");
-				dialog.setMessage("正在上传");
-				dialog.show();
+				
 				v.setClickable(false);
 				for (int j = 0; j < tmpList.size(); j++) {
 					uploadhash.put(tmpList.get(j).toString(), "");
@@ -660,7 +569,6 @@ public class RecordActivity extends Activity {
 				scanned.setText("" + uploadnum);
 				scannedList.add(uid);
 				uploadCode = "";
-				
 				Thread t = new Thread(new Runnable() {
 
 					@Override
@@ -670,7 +578,8 @@ public class RecordActivity extends Activity {
 							Thread.sleep(500);
 							Button v =(Button)findViewById(R.id.ulbtn);
 							v.setClickable(true);
-							dialog.dismiss();idQuery();
+							queryinit = false;
+							httpQuery();
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -680,9 +589,9 @@ public class RecordActivity extends Activity {
 				t.start();
 				adapter.notifyDataSetChanged();
 				scannedListV.setSelection(uploadnum - 1);
-				if (scannedTimes == 1)
+				if (scanTimes == 1)
 					barcode1.setText("");
-				else if (scannedTimes == 2){
+				else if (scanTimes == 2){
 					barcode1.setText("");
 					barcode2.setText("");
 				}
@@ -740,22 +649,6 @@ public class RecordActivity extends Activity {
 		state.setText("请重新扫描条码！");
 		state.setTextColor(Color.BLACK);
 	}
-	
-	private void inithash() {
-		int tempnum = total_count > 20 ? 20 : total_count;
-		for (int i = 0; i < tempnum; i++) {
-			String uid = "";
-			try {
-				uid = jsonObject.getJSONArray("objects").getJSONObject(i)
-						.getString("UID");
-				int id = jsonObject.getJSONArray("objects").getJSONObject(i)
-						.getInt("id");
-				hashtable.put(uid, "" + id);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	private void initList() {
 		int tempnum = total_count > 20 ? 20 : total_count;
@@ -767,11 +660,13 @@ public class RecordActivity extends Activity {
 				int id = jsonObject.getJSONArray("objects").getJSONObject(i)
 						.getInt("id");
 				hashtable.put(uid, "" + id);
-				scannedList.add(uid);
-				String[] tmpstr=uid.split("_");							
-				for(int j=0;j<tmpstr.length;j++)
-				{
-					uploadhash.put(tmpstr[j], "");
+				if(queryinit){
+					scannedList.add(uid);
+					String[] tmpstr=uid.split("_");							
+					for(int j=0;j<tmpstr.length;j++)
+					{
+						uploadhash.put(tmpstr[j], "");
+					}
 				}
 
 			} catch (Exception e) {
@@ -824,7 +719,7 @@ public class RecordActivity extends Activity {
 					else
 						bcr = BarCodeReader.open(); // Android 2.3
 
-					decodeMethod.decodeinit(bcr);
+					decodeMethod.decodeinit(bcr,getApplicationContext());
 					if (bcr == null) {
 						Log.d("tag", "open failed");
 						return;
@@ -894,7 +789,7 @@ public class RecordActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(ACTION_BARCODE_SERVICE_BROADCAST)){
-				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);				
+				barcodeString = intent.getExtras().getString(KEY_BARCODE_STR);	
 			}
 			if(barcodeString.length()>0){
 				Message msg = new Message();
