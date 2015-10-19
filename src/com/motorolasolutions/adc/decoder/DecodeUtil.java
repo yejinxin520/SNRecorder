@@ -3,6 +3,8 @@ package com.motorolasolutions.adc.decoder;
 import com.hy.snrecorder.R;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.util.Log;
@@ -10,6 +12,8 @@ import android.util.Log;
 public class DecodeUtil extends Activity implements
 		BarCodeReader.DecodeCallback {
 
+	public static final String ACTION_BARCODE_SERVICE_BROADCAST = "action_barcode_broadcast";
+	public static final String KEY_BARCODE_STR = "key_barcode_string";
 	static final int STATE_IDLE = 0;
 	static final int STATE_DECODE = 1;
 	private ToneGenerator tg = null;
@@ -22,6 +26,7 @@ public class DecodeUtil extends Activity implements
 	private String decodeData;
 	private String decodeState;
 	private int stateID;
+	private Context context;
 
 	private boolean isLog = true;
 	private static int decCount = 0;
@@ -49,9 +54,9 @@ public class DecodeUtil extends Activity implements
 
 	private int motionEvents = 0;
 
-	public void decodeinit(final BarCodeReader r) {
+	public void decodeinit(final BarCodeReader r,Context context) {
 		state = STATE_IDLE;
-
+		this.context = context;
 		Thread t = new Thread(new Runnable() {
 
 			@Override
@@ -172,7 +177,7 @@ public class DecodeUtil extends Activity implements
 				setState(decodeStatString);
 				setData(decodeDataString);
 				log("=======");
-				System.out.println(decodeDataString);
+				System.out.println(decodeDataString.trim());
 				log("======= end");
 
 				if (decCount > 1) // Add the next line only if multiple decode
@@ -187,6 +192,11 @@ public class DecodeUtil extends Activity implements
 
 			if (tg != null)
 				tg.startTone(ToneGenerator.TONE_CDMA_NETWORK_CALLWAITING);
+			
+			Intent intent = new Intent();
+			intent.setAction(ACTION_BARCODE_SERVICE_BROADCAST);
+			intent.putExtra(KEY_BARCODE_STR, decodeData.trim());
+			context.sendBroadcast(intent);
 		} else // no-decode
 		{
 			setData("");
