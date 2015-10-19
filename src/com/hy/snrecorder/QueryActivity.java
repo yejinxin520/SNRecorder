@@ -170,29 +170,6 @@ public class QueryActivity extends Activity {
 	public void doScan(View v) {
 		if(bcr!=null){
 			decodeMethod.doDecode();
-			Thread t = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						while (decodeMethod.getData().length() == 0) {
-							Thread.sleep(500);
-						}
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					String s = decodeMethod.getData().trim();
-					Message msg = new Message();
-					Bundle bundle = new Bundle();
-					bundle.putString("barc", s);
-					msg.setData(bundle);
-					QueryActivity.this.handler.sendMessage(msg);
-
-				}
-			});
-			t.start();
 		}else {
 			intentService.putExtra(KEY_ACTION, "UP");
 			this.startService(intentService);
@@ -374,7 +351,7 @@ public class QueryActivity extends Activity {
 					else
 						bcr = BarCodeReader.open(); // Android 2.3
 
-					decodeMethod.decodeinit(bcr);
+					decodeMethod.decodeinit(bcr,getApplicationContext());
 					if (bcr == null) {
 						Log.d("tag", "open failed");
 						return;
