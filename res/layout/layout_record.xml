@@ -118,6 +118,7 @@
             android:layout_below="@id/rl1"
             android:background="#b3b3b6" />
 
+        
         <RelativeLayout
             android:id="@+id/rl2"
             android:layout_width="match_parent"
@@ -256,7 +257,13 @@
             android:layout_height="1dp"
             android:layout_below="@id/rl2"
             android:background="#b3b3b6" />
-
+        <RelativeLayout
+            android:id="@+id/rl3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/rl1"
+            android:layout_marginTop="28dp"
+            >
         <SlidingDrawer
             android:id="@+id/sduidlist"
             android:layout_width="wrap_content"
@@ -276,8 +283,15 @@
                 android:id="@+id/contentlist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#ebeced" />
+                android:paddingTop="5dp"               
+                android:background="#f2ce7f" />
         </SlidingDrawer>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#b3b3b6" />
+        </RelativeLayout>
     </RelativeLayout>
 
 </LinearLayout>
