@@ -39,17 +39,7 @@
             android:textColor="#f00"
             android:textSize="15sp"
             />
-        <Button
-            android:id="@+id/uploadlocal"
-            android:layout_toRightOf="@id/netstatetv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:background="@drawable/selector2"
-            android:onClick="doUpload"
-            android:visibility="gone"
-            android:text="@string/uploadbtn"
-            android:textSize="15sp" />
+        
         </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -185,6 +175,24 @@
                 android:background="@drawable/selector2"
                 android:onClick="doClear"
                 android:text="@string/clear"
+                android:textSize="15sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/ulrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_weight="1" >
+
+            <Button
+                android:id="@+id/uploadlocal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/selector2"
+                android:onClick="doUpload"
+                
+                android:text="@string/uploadbtn"
                 android:textSize="15sp" />
         </RelativeLayout>
     </LinearLayout>

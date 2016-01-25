@@ -51,7 +51,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,8 +66,8 @@ public class OffLineActivity extends Activity implements netEventHandler{
 	private Intent intentService = new Intent(
 			"com.hyipc.core.service.barcode.BarcodeService2D");
 	private Spinner spinner;
+	private RelativeLayout ulrl;
 	private TextView barcode,netstate,offbartv,barcode1,saved;
-	private Button uploadlocal;
 	private ProgressDialog dialog;
 	private String filename,barcodestr="",modelstr,url,resultstr;
 	private int localnum=0,offset = 0,total_count,visnum,total,scanTimes,scannedTimes=0;
@@ -141,7 +141,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		spinner = (Spinner)findViewById(R.id.modeltype);
 		barcode = (TextView)findViewById(R.id.barcodeoffline);
 		netstate = (TextView)findViewById(R.id.netstatetv);
-		uploadlocal = (Button)findViewById(R.id.uploadlocal);
+		ulrl = (RelativeLayout)findViewById(R.id.ulrl);
 		localListV = (SwipeMenuListView)findViewById(R.id.locallist);
 		saved = (TextView)findViewById(R.id.savedstr);
 		saved.setText("0");
@@ -440,8 +440,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
                 localListV.setSelection(localnum-1);
                 break;
             case 1:
-            	
-            	uploadlocal.setVisibility(View.GONE);
+            	ulrl.setVisibility(View.GONE);
             	dialog.dismiss();
             	FileHandler.deleteFile(filename);
             	break;
@@ -456,11 +455,11 @@ public class OffLineActivity extends Activity implements netEventHandler{
 				break;
 			case 4:
 				if(idhash.containsKey(modelstr)){
-        			netstate.setText("检测到已连接wifi是否上传？");
-            		uploadlocal.setVisibility(View.VISIBLE);
+        			netstate.setText("已连接wifi,可上传");
+            		ulrl.setVisibility(View.VISIBLE);
         		}else {
             		netstate.setText("已连接wifi,但无此任务");
-            		uploadlocal.setVisibility(View.GONE);
+            		ulrl.setVisibility(View.GONE);
     			}
 				break;
             default:
@@ -808,7 +807,7 @@ public class OffLineActivity extends Activity implements netEventHandler{
 		// TODO Auto-generated method stub
 		if (NetUtil.getNetworkState(this) == NetUtil.NETWORN_NONE) {
             netstate.setText("无可用网络！");
-            uploadlocal.setVisibility(View.GONE);
+            ulrl.setVisibility(View.VISIBLE);
         }else if(NetUtil.getNetworkState(this) == NetUtil.NETWORN_WIFI){
         	idQuery();
         	if(!locallist.isEmpty()){        		
@@ -829,8 +828,8 @@ public class OffLineActivity extends Activity implements netEventHandler{
         		t.start();
         		
         	}else {
-        		netstate.setText("已连接wifi");
-        		uploadlocal.setVisibility(View.GONE);
+        		netstate.setText("已连接wifi,本地无内容");
+        		ulrl.setVisibility(View.GONE);
 			}
         }
 	}
